@@ -1,0 +1,186 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
+import IconArchive from "@/assets/icons/IconArchive.svg";
+import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
+import IconSearch from "@/assets/icons/IconSearch.svg";
+import IconMoon from "@/assets/icons/IconMoon.svg";
+import IconX from "@/assets/icons/IconX.svg";
+import LinkButton from "./LinkButton.astro";
+import { stripBase, stripLocale } from "@/utils/withBase";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+const { site, features } = config;
+
+const locale = Astro.currentLocale ?? config.site.lang;
+const t = useTranslations(locale);
+
+const relativePath = stripBase(Astro.url.pathname);
+const pathWithoutTrailingSlash =
+  relativePath.endsWith("/") && relativePath !== "/"
+    ? relativePath.slice(0, -1)
+    : relativePath;
+
+const currentPath = stripLocale(pathWithoutTrailingSlash, locale);
+
+const isActive = (path: string) => {
+  const currentPathArray = currentPath.split("/").filter(p => p.trim());
+  const pathArray = path.split("/").filter(p => p.trim());
+  return currentPath === path || currentPathArray[0] === pathArray[0];
+};
+---
+
+<a
+  id="skip-to-content"
+  href="#main-content"
+  class="bg-background text-accent absolute inset-s-16 -top-full z-50 px-3 py-2 backdrop-blur-lg transition-all focus:top-4"
+>
+  {t.a11y.skipToContent}
+</a>
+
+<!-- peek.vn style header -->
+<header class="peek-header">
+  <div class="peek-layout" style="padding-top: 0; padding-bottom: 0;">
+    <!-- Logo -->
+    <a
+      href={getRelativeLocaleUrl(locale, "")}
+      class="flex items-center gap-2 no-underline"
+      aria-label="Về trang chủ"
+    >
+      <span class="peek-logo-bubble" aria-hidden="true">
+        <span class="peek-logo-eye"></span>
+        <span class="peek-logo-eye"></span>
+      </span>
+      <span class="flex items-baseline gap-2">
+        <span class="peek-logo-word">pee<span style="margin-left: -0.035em;">k</span></span>
+        <span class="peek-logo-tag">Liếc phát biết</span>
+      </span>
+    </a>
+
+    <!-- Search -->
+    <label class="peek-search flex-1 max-w-md mx-4 hidden sm:flex">
+      <span>🔍</span>
+      <input placeholder="Tìm tin nóng, chủ đề, nguồn…" value="" />
+    </label>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2.5 ml-auto">
+      {
+        features.search !== false && (
+          <LinkButton
+            href={getRelativeLocaleUrl(locale, "search")}
+            class="peek-icon-btn sm:hidden"
+            title={t.nav.search}
+            aria-label={t.nav.search}
+          >
+            <IconSearch class="size-5" />
+          </LinkButton>
+        )
+      }
+
+      {
+        features.lightAndDarkMode && (
+          <button
+            id="theme-btn"
+            class="peek-icon-btn"
+            title={t.a11y.toggleTheme}
+            aria-label="auto"
+            aria-live="polite"
+          >
+            <IconMoon class="size-4 dark:hidden" />
+            <IconSunHigh class="size-4 hidden dark:block" />
+          </button>
+        )
+      }
+
+      <!-- Mobile menu button -->
+      <button
+        id="menu-btn"
+        class="peek-icon-btn lg:hidden"
+        aria-label={t.a11y.openMenu}
+        aria-expanded="false"
+        aria-controls="menu-items"
+        data-label-open={t.a11y.openMenu}
+        data-label-close={t.a11y.closeMenu}
+      >
+        <IconX id="close-icon" class="hidden size-4" />
+        <IconMenuDeep id="menu-icon" class="size-4" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation menu (mobile) -->
+  <nav
+    id="menu-items"
+    class="hidden lg:hidden border-t border-border px-4 py-3"
+  >
+    <ul class="flex flex-col gap-1">
+      <li>
+        <a
+          href={getRelativeLocaleUrl(locale, "posts")}
+          class:list={["peek-nav-item", { active: isActive("/posts") }]}
+        >
+          <span>📝</span> {t.nav.posts}
+        </a>
+      </li>
+      <li>
+        <a
+          href={getRelativeLocaleUrl(locale, "tags")}
+          class:list={["peek-nav-item", { active: isActive("/tags") }]}
+        >
+          <span>🏷️</span> {t.nav.tags}
+        </a>
+      </li>
+      <li>
+        <a
+          href={getRelativeLocaleUrl(locale, "about")}
+          class:list={["peek-nav-item", { active: isActive("/about") }]}
+        >
+          <span>ℹ️</span> {t.nav.about}
+        </a>
+      </li>
+      {
+        features.showArchives && (
+          <li>
+            <a
+              href={getRelativeLocaleUrl(locale, "archives")}
+              class:list={["peek-nav-item", { active: isActive("/archives") }]}
+            >
+              <span>📦</span> {t.nav.archives}
+            </a>
+          </li>
+        )
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  function toggleNav() {
+    const menuBtn = document.querySelector<HTMLButtonElement>("#menu-btn");
+    const menuItems = document.querySelector("#menu-items");
+    const menuIcon = document.querySelector("#menu-icon");
+    const closeIcon = document.querySelector("#close-icon");
+
+    if (!menuBtn || !menuItems || !menuIcon || !closeIcon) return;
+
+    const openLabel = menuBtn.dataset.labelOpen ?? "Open menu";
+    const closeLabel = menuBtn.dataset.labelClose ?? "Close menu";
+
+    menuBtn.addEventListener("click", () => {
+      const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
+
+      menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
+      menuBtn.setAttribute("aria-label", openMenu ? openLabel : closeLabel);
+
+      menuItems.classList.toggle("hidden");
+      menuIcon.classList.toggle("hidden");
+      closeIcon.classList.toggle("hidden");
+    });
+  }
+
+  toggleNav();
+
+  document.addEventListener("astro:after-swap", toggleNav);
+</script>

@@ -1,0 +1,34 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Socials from "./Socials.astro";
+import { useTranslations } from "@/i18n";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import config from "@/config";
+
+type Props = {
+  noMarginTop?: boolean;
+} & HTMLAttributes<"footer">;
+
+const { noMarginTop = false, class: className, ...attrs } = Astro.props;
+
+const locale = Astro.currentLocale ?? config.site.lang;
+const t = useTranslations(locale);
+const currentYear = new Date().getFullYear();
+---
+
+<footer
+  class:list={["peek-site-footer", { "mt-auto": !noMarginTop }, className]}
+  {...attrs}
+>
+  <div class="peek-site-footer-inner">
+    <span class="peek-site-footer-brand">peek — Liếc phát biết</span>
+    <nav class="peek-site-footer-nav">
+      <a href={getRelativeLocaleUrl(locale, "about")}>Giới thiệu</a>
+      <a href={getRelativeLocaleUrl(locale, "posts")}>Bài viết</a>
+      <a href={getRelativeLocaleUrl(locale, "tags")}>Tags</a>
+    </nav>
+    <span class="peek-site-footer-note">
+      Tin tổng hợp có ghi nguồn — bản quyền nội dung gốc thuộc về nguồn phát hành.
+    </span>
+  </div>
+</footer>

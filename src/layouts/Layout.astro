@@ -1,0 +1,134 @@
+---
+import { Font } from "astro:assets";
+import { ClientRouter } from "astro:transitions";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
+import { getAssetPath } from "@/utils/withBase";
+import config from "@/config";
+import "@/styles/global.css";
+
+type Props = {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  canonicalURL?: string;
+};
+
+const { site } = config;
+
+const {
+  title = site.title,
+  description = site.description,
+  ogImage = resolveDefaultOgImagePath(config),
+  canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+} = Astro.props;
+
+const socialImageURL = new URL(ogImage, Astro.site ?? Astro.url);
+const rssHref = getRelativeLocaleUrl(
+  Astro.currentLocale ?? config.site.lang,
+  "rss.xml"
+);
+---
+
+<!doctype html>
+<html
+  dir={site.dir ?? "ltr"}
+  lang={Astro.currentLocale ?? site.lang}
+  class="overflow-y-scroll scroll-smooth"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href={getAssetPath("favicon.svg")} />
+    <link rel="icon" href={getAssetPath("favicon.ico")} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Fonts: Inter, Space Grotesk, Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Space+Grotesk:wght@300..700&family=Montserrat:wght@800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Primary meta -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta name="author" content={site.author} />
+    <link rel="sitemap" href={getAssetPath("sitemap-index.xml")} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.title} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={socialImageURL} />
+
+    <!-- Twitter / X -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={socialImageURL} />
+
+    <!-- RSS autodiscovery -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={site.title}
+      href={new URL(rssHref, Astro.site)}
+    />
+
+    <!-- Theme color -->
+    <meta name="theme-color" content="#0B0B0F" />
+
+    <!-- Extra head content injected by child layouts -->
+    <slot name="head" />
+
+    {
+      site.googleVerification && (
+        <meta
+          name="google-site-verification"
+          content={site.googleVerification}
+        />
+      )
+    }
+
+    <!-- FOUC-prevention script -->
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        const theme = stored ?? (prefersDark ? "dark" : "light");
+        const root = document.firstElementChild;
+        root?.setAttribute("data-theme", theme);
+        root?.classList.toggle("dark", theme === "dark");
+        window.__theme = { value: theme };
+      })();
+    </script>
+
+    <style is:global>
+      :root {
+        --font-inter: 'Inter', system-ui, sans-serif;
+        --font-grotesk: 'Space Grotesk', system-ui, sans-serif;
+        --font-montserrat: 'Montserrat', sans-serif;
+      }
+    </style>
+
+    <ClientRouter />
+  </head>
+  <body
+    class="bg-background text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
+    style="font-family: var(--font-inter);"
+  >
+    <slot />
+    <script>
+      import "@/scripts/theme";
+    </script>
+  </body>
+</html>

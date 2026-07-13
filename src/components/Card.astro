@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getPostUrl } from "@/utils/getPostPaths";
+import { toTransitionName } from "@/utils/toTransitionName";
+import Datetime from "./Datetime.astro";
+
+type Props = {
+  variant?: "h2" | "h3";
+} & CollectionEntry<"posts">;
+
+const { variant: Heading = "h2", id, data, filePath } = Astro.props;
+
+const { title, description, ...props } = data;
+---
+
+<li class="peek-card">
+  <a
+    href={getPostUrl(id, filePath, Astro.currentLocale)}
+    class="peek-title-link"
+  >
+    <Heading
+      transition:name={toTransitionName(title)}
+      class="peek-card-title"
+    >
+      {title}
+    </Heading>
+  </a>
+  <div class="peek-card-meta">
+    <span class="peek-src-type">📝</span>
+    <Datetime {...props} />
+  </div>
+  {description && <p class="peek-card-summary">{description}</p>}
+  <div class="peek-card-foot">
+    <span class="peek-see">Xem bài viết →</span>
+  </div>
+</li>
