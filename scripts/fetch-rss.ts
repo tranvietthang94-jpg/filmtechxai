@@ -3,9 +3,11 @@
  * Chạy tự động mỗi ngày qua Netlify Functions
  */
 
-import { RSS_SOURCES, type RssSource } from "../src/config/sources";
+import { RSS_SOURCES, YOUTUBE_CHANNELS, type RssSource } from "../src/config/sources";
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
+
+const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || "AIzaSyCqvCS_QkHxD7AF_KqNrvo4Q37kFtzi1SE";
 
 interface RssItem {
   title: string;
@@ -23,13 +25,22 @@ interface ParsedRss {
   items: RssItem[];
 }
 
+interface YoutubeVideo {
+  title: string;
+  link: string;
+  description: string;
+  pubDate: string;
+  thumbnail: string;
+  channelName: string;
+  viewCount: string;
+}
+
 /**
  * Parse RSS XML thành object
  */
 function parseRssXml(xml: string): ParsedRss {
   const items: RssItem[] = [];
 
-  // Extract items
   const itemRegex = /<item>([\s\S]*?)<\/item>/g;
   let match;
 
@@ -43,7 +54,6 @@ function parseRssXml(xml: string): ParsedRss {
     const creator = extractTag(itemXml, "dc:creator") ?? undefined;
     const content = extractTag(itemXml, "content:encoded") ?? extractTag(itemXml, "content") ?? undefined;
 
-    // Try to get thumbnail from media:content or enclosure
     const thumbnail =
       extractAttribute(itemXml, "media:content", "url") ??
       extractAttribute(itemXml, "enclosure", "url") ??
@@ -69,40 +79,26 @@ function parseRssXml(xml: string): ParsedRss {
   };
 }
 
-/**
- * Extract text content from XML tag
- */
 function extractTag(xml: string, tag: string): string | null {
-  // Handle CDATA
   const cdataRegex = new RegExp(`<${tag}[^>]*>\\s*<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>\\s*</${tag}>`, "i");
   const cdataMatch = xml.match(cdataRegex);
   if (cdataMatch) return cdataMatch[1].trim();
 
-  // Handle normal tags
   const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i");
   const match = xml.match(regex);
   return match ? match[1].trim() : null;
 }
 
-/**
- * Extract attribute from XML tag
- */
 function extractAttribute(xml: string, tag: string, attr: string): string | null {
   const regex = new RegExp(`<${tag}[^>]*${attr}=["']([^"']*)["'][^>]*>`, "i");
   const match = xml.match(regex);
   return match ? match[1] : null;
 }
 
-/**
- * Strip HTML tags
- */
 function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "").trim();
 }
 
-/**
- * Decode HTML entities
- */
 function decodeHtmlEntities(text: string): string {
   return text
     .replace(/&/g, "&")
@@ -114,9 +110,6 @@ function decodeHtmlEntities(text: string): string {
     .replace(/&#x2F;/g, "/");
 }
 
-/**
- * Fetch RSS từ URL
- */
 async function fetchRss(url: string): Promise<ParsedRss | null> {
   try {
     const response = await fetch(url, {
@@ -140,8 +133,57 @@ async function fetchRss(url: string): Promise<ParsedRss | null> {
 }
 
 /**
- * Tạo slug từ title
+ * Fetch YouTube videos using YouTube Data API v3
  */
+async function fetchYoutubeVideos(channelId: string, channelName: string): Promise<YoutubeVideo[]> {
+  try {
+    // Get uploads playlist ID
+    const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${YOUTUBE_API_KEY}`;
+    const channelRes = await fetch(channelUrl);
+    const channelData = await channelRes.json();
+
+    if (!channelData.items || channelData.items.length === 0) {
+      console.error(`  No channel found for ID: ${channelId}`);
+      return [];
+    }
+
+    const uploadsPlaylistId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
+
+    // Get videos from uploads playlist
+    const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=3&key=${YOUTUBE_API_KEY}`;
+    const playlistRes = await fetch(playlistUrl);
+    const playlistData = await playlistRes.json();
+
+    if (!playlistData.items) return [];
+
+    // Get video details (view count)
+    const videoIds = playlistData.items.map((item: any) => item.snippet.resourceId.videoId).join(",");
+    const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${YOUTUBE_API_KEY}`;
+    const videoRes = await fetch(videoUrl);
+    const videoData = await videoRes.json();
+
+    const viewCounts: Record<string, string> = {};
+    if (videoData.items) {
+      for (const video of videoData.items) {
+        viewCounts[video.id] = video.statistics.viewCount || "0";
+      }
+    }
+
+    return playlistData.items.map((item: any) => ({
+      title: item.snippet.title,
+      link: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
+      description: item.snippet.description || "",
+      pubDate: item.snippet.publishedAt,
+      thumbnail: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || "",
+      channelName,
+      viewCount: viewCounts[item.snippet.resourceId.videoId] || "0",
+    }));
+  } catch (error) {
+    console.error(`  Error fetching YouTube channel ${channelName}:`, error);
+    return [];
+  }
+}
+
 function createSlug(title: string): string {
   return title
     .toLowerCase()
@@ -151,9 +193,6 @@ function createSlug(title: string): string {
     .substring(0, 60);
 }
 
-/**
- * Format date to ISO string
- */
 function formatDate(dateStr: string): string {
   try {
     const date = new Date(dateStr);
@@ -163,9 +202,6 @@ function formatDate(dateStr: string): string {
   }
 }
 
-/**
- * Tạo frontmatter cho bài viết
- */
 function createFrontmatter(
   title: string,
   description: string,
@@ -174,67 +210,54 @@ function createFrontmatter(
   tags: string[],
   ogImage?: string
 ): string {
-  const frontmatter = {
-    title: title.replace(/"/g, '\\"'),
-    description: description.substring(0, 160).replace(/"/g, '\\"'),
-    pubDatetime: formatDate(pubDate),
-    author: author.replace(/"/g, '\\"'),
-    tags,
-    ogImage: ogImage || "",
-    featured: false,
-    draft: false,
-  };
-
   return `---
-title: "${frontmatter.title}"
-description: "${frontmatter.description}"
-pubDatetime: ${frontmatter.pubDatetime}
-author: "${frontmatter.author}"
-tags: [${frontmatter.tags.map((t) => `"${t}"`).join(", ")}]
-ogImage: "${frontmatter.ogImage}"
-featured: ${frontmatter.featured}
-draft: ${frontmatter.draft}
+title: "${title.replace(/"/g, '\\"')}"
+description: "${description.substring(0, 160).replace(/"/g, '\\"')}"
+pubDatetime: ${formatDate(pubDate)}
+author: "${author.replace(/"/g, '\\"')}"
+tags: [${tags.map((t) => `"${t}"`).join(", ")}]
+ogImage: "${ogImage || ""}"
+featured: false
+draft: false
 ---
 `;
 }
 
-/**
- * Tạo nội dung bài viết từ RSS item
- */
-function createPostContent(item: RssItem, source: RssSource): string {
+function createPostContent(item: RssItem | YoutubeVideo, source: RssSource | { name: string; category: string }): string {
   let content = "";
 
-  // Add thumbnail if available
-  if (item.thumbnail) {
+  if ("viewCount" in item) {
+    // YouTube video
+    const views = parseInt(item.viewCount).toLocaleString();
     content += `![${item.title}](${item.thumbnail})\n\n`;
+    content += `**Kênh:** ${item.channelName} | **Lượt xem:** ${views}\n\n`;
+    if (item.description) {
+      content += `${item.description.substring(0, 500)}...\n\n`;
+    }
+    content += `---\n\n*Xem video đầy đủ tại: [YouTube](${item.link})*\n`;
+  } else {
+    // RSS article
+    if (item.thumbnail) {
+      content += `![${item.title}](${item.thumbnail})\n\n`;
+    }
+    if (item.description) {
+      content += `${item.description}\n\n`;
+    }
+    if (item.content && item.content.length > item.description.length) {
+      content += `${item.content}\n\n`;
+    }
+    content += `---\n\n*Đọc đầy đủ tại: [${source.name}](${item.link})*\n`;
   }
-
-  // Add description
-  if (item.description) {
-    content += `${item.description}\n\n`;
-  }
-
-  // Add full content if available
-  if (item.content && item.content.length > item.description.length) {
-    content += `${item.content}\n\n`;
-  }
-
-  // Add source link
-  content += `---\n\n*Đọc đầy đủ tại: [${source.name}](${item.link})*\n`;
 
   return content;
 }
 
-/**
- * Fetch tất cả RSS và tạo bài viết
- */
 export async function fetchAllRss(): Promise<{ success: number; failed: number; total: number }> {
   const postsDir = join(process.cwd(), "src/content/posts/_auto");
   const aiDir = join(postsDir, "ai");
   const filmDir = join(postsDir, "film");
   const youtubeDir = join(postsDir, "youtube");
 
-  // Create directories if not exist
   [postsDir, aiDir, filmDir, youtubeDir].forEach((dir) => {
     if (!existsSync(dir)) {
       mkdirSync(dir, { recursive: true });
@@ -245,10 +268,11 @@ export async function fetchAllRss(): Promise<{ success: number; failed: number; 
   let failed = 0;
   let total = 0;
 
-  console.log("🚀 Starting RSS fetch for filmtechxai...\n");
+  console.log(" Starting RSS fetch for filmtechxai...\n");
 
+  // Fetch RSS sources
   for (const source of RSS_SOURCES) {
-    console.log(`📡 Fetching: ${source.name} (${source.category})`);
+    console.log(` Fetching: ${source.name} (${source.category})`);
 
     const rss = await fetchRss(source.url);
 
@@ -258,7 +282,6 @@ export async function fetchAllRss(): Promise<{ success: number; failed: number; 
       continue;
     }
 
-    // Get only the 3 most recent items from each source
     const recentItems = rss.items.slice(0, 3);
 
     for (const item of recentItems) {
@@ -267,41 +290,19 @@ export async function fetchAllRss(): Promise<{ success: number; failed: number; 
       const datePrefix = date.toISOString().split("T")[0];
       const filename = `${datePrefix}-${slug}.md`;
 
-      // Determine directory based on category
-      const targetDir =
-        source.category === "ai" ? aiDir : source.category === "film" ? filmDir : youtubeDir;
-
+      const targetDir = source.category === "ai" ? aiDir : filmDir;
       const filepath = join(targetDir, filename);
 
-      // Skip if file already exists
       if (existsSync(filepath)) {
         console.log(`  ⏭️  Skipped (exists): ${filename}`);
         continue;
       }
 
-      // Create tags
       const tags = [source.category, source.name.toLowerCase().replace(/\s+/g, "-")];
-      if (source.category === "youtube") {
-        tags.push("video");
-      }
-
-      // Create frontmatter
-      const frontmatter = createFrontmatter(
-        item.title,
-        item.description || "",
-        item.pubDate || new Date().toISOString(),
-        source.name,
-        tags,
-        item.thumbnail
-      );
-
-      // Create content
+      const frontmatter = createFrontmatter(item.title, item.description || "", item.pubDate || new Date().toISOString(), source.name, tags, item.thumbnail);
       const content = createPostContent(item, source);
 
-      // Write file
-      const fullContent = frontmatter + "\n" + content;
-      writeFileSync(filepath, fullContent, "utf-8");
-
+      writeFileSync(filepath, frontmatter + "\n" + content, "utf-8");
       console.log(`  ✅ Created: ${filename}`);
       total++;
     }
@@ -310,16 +311,53 @@ export async function fetchAllRss(): Promise<{ success: number; failed: number; 
     console.log("");
   }
 
+  // Fetch YouTube channels
+  console.log("📺 Fetching YouTube channels...\n");
+  for (const channel of YOUTUBE_CHANNELS) {
+    console.log(`📺 Fetching: ${channel.name}`);
+
+    const videos = await fetchYoutubeVideos(channel.channelId, channel.name);
+
+    if (videos.length === 0) {
+      console.log(`  ❌ No videos found\n`);
+      failed++;
+      continue;
+    }
+
+    for (const video of videos) {
+      const slug = createSlug(video.title);
+      const date = new Date(video.pubDate);
+      const datePrefix = date.toISOString().split("T")[0];
+      const filename = `${datePrefix}-${slug}.md`;
+      const filepath = join(youtubeDir, filename);
+
+      if (existsSync(filepath)) {
+        console.log(`  ⏭️  Skipped (exists): ${filename}`);
+        continue;
+      }
+
+      const tags = ["youtube", channel.name.toLowerCase().replace(/\s+/g, "-"), "video"];
+      const frontmatter = createFrontmatter(video.title, video.description, video.pubDate, channel.name, tags, video.thumbnail);
+      const content = createPostContent(video, { name: channel.name, category: "youtube" });
+
+      writeFileSync(filepath, frontmatter + "\n" + content, "utf-8");
+      console.log(`  ✅ Created: ${filename} (${parseInt(video.viewCount).toLocaleString()} views)`);
+      total++;
+    }
+
+    success++;
+    console.log("");
+  }
+
   console.log("\n========================================");
-  console.log(`✅ Success: ${success}/${RSS_SOURCES.length} sources`);
-  console.log(`❌ Failed: ${failed}/${RSS_SOURCES.length} sources`);
+  console.log(`✅ Success: ${success} sources`);
+  console.log(`❌ Failed: ${failed} sources`);
   console.log(`📝 Total posts created: ${total}`);
   console.log("========================================\n");
 
   return { success, failed, total };
 }
 
-// Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   fetchAllRss()
     .then((result) => {

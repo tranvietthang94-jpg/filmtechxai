@@ -10,6 +10,12 @@ export interface RssSource {
   language?: "vi" | "en";
 }
 
+export interface YoutubeChannel {
+  name: string;
+  channelId: string;
+  category: "youtube";
+}
+
 export const RSS_SOURCES: RssSource[] = [
   // ============ AI NEWS ============
   {
@@ -122,45 +128,39 @@ export const RSS_SOURCES: RssSource[] = [
     category: "film",
     language: "en",
   },
+];
 
-  // ============ YOUTUBE CHANNELS ============
-  // Lưu ý: YouTube RSS cần channel ID, không phải @handle
-  // Format: https://www.youtube.com/feeds/videos.xml?channel_id=CHANNEL_ID
+// YouTube channels với channel ID chính xác
+export const YOUTUBE_CHANNELS: YoutubeChannel[] = [
   {
     name: "MKBHD",
-    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCBcRF18a7Qf58cCRy5xuWwQ",
+    channelId: "UCBJycsmduvYEL83R_U4JriQ",
     category: "youtube",
-    language: "en",
   },
   {
     name: "Linus Tech Tips",
-    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6XwvKRl5Rojg",
+    channelId: "UCXuqSBlHAE6Xw-yeVR0TjDw",
     category: "youtube",
-    language: "en",
   },
   {
     name: "Dave2D",
-    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCV8H1vQBMwJuTQe4YmS1PjA",
+    channelId: "UCVYamHliCI9rw1tHR1xbkfw",
     category: "youtube",
-    language: "en",
   },
   {
     name: "Mrwhosetheboss",
-    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCMiJRAwDNSNzuYeN2eWa0lA",
+    channelId: "UCMiJRAwDNSNzuYeN2eWa0lA",
     category: "youtube",
-    language: "en",
   },
   {
     name: "Gerald Undone",
-    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UC0vhkS1hWQc7cK1YnKjKz1g",
+    channelId: "UC0vhkS1hWQc7cK1YnKjKz1g",
     category: "youtube",
-    language: "en",
   },
   {
     name: "Cinema5D",
-    url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCY1kGpU4Q0zWWw_1g-jB7AA",
+    channelId: "UCY1kGpU4Q0zWWw_1g-jB7AA",
     category: "youtube",
-    language: "en",
   },
 ];
 
@@ -178,6 +178,6 @@ export function countSourcesByCategory(): { ai: number; film: number; youtube: n
   return {
     ai: RSS_SOURCES.filter((s) => s.category === "ai").length,
     film: RSS_SOURCES.filter((s) => s.category === "film").length,
-    youtube: RSS_SOURCES.filter((s) => s.category === "youtube").length,
+    youtube: YOUTUBE_CHANNELS.length,
   };
 }
