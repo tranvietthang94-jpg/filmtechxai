@@ -45,8 +45,9 @@ function parseRssXml(xml: string): ParsedRss {
 
     // Try to get thumbnail from media:content or enclosure
     const thumbnail =
-      extractAttribute(itemXml, "media:content", "url") ||
-      extractAttribute(itemXml, "enclosure", "url");
+      extractAttribute(itemXml, "media:content", "url") ??
+      extractAttribute(itemXml, "enclosure", "url") ??
+      undefined;
 
     if (title && link) {
       items.push({

@@ -109,13 +109,13 @@ const youtubeCount = sources.filter(s => s.type === "youtube").length;
         <span class="peek-hero-flame">🔥</span>
         <div class="peek-hero-meta">
           <span class="peek-src-type">📰</span>
-          <span>AstroPaper</span>
+          <span>filmtechxai</span>
           <span class="dot">·</span>
-          <span>{t.home.welcome ?? "Chào mừng"}</span>
+          <span>Tin tức AI & Film</span>
           <span class="peek-hero-hot">🔥 Nóng nhất</span>
         </div>
         <h1 class="peek-hero-title">
-          {t.home.greeting ?? "AstroPaper — Blog Theme"}
+          filmtechxai — Liếc phát biết
         </h1>
         <p class="peek-hero-summary">
           AstroPaper là một blog theme minimal, responsive, accessible và SEO-friendly. 
@@ -200,7 +200,7 @@ const youtubeCount = sources.filter(s => s.type === "youtube").length;
             <div>
               <div class="peek-prow-title">{post.data.title}</div>
               <div class="peek-prow-sub">
-                {post.data.pubDate?.toLocaleDateString(locale)}
+                {post.data.pubDatetime?.toLocaleDateString(locale)}
               </div>
             </div>
           </div>
@@ -221,7 +221,7 @@ const youtubeCount = sources.filter(s => s.type === "youtube").length;
                 <div>
                   <div class="peek-prow-title">{post.data.title}</div>
                   <div class="peek-prow-sub">
-                    {post.data.pubDate?.toLocaleDateString(locale)}
+                    {post.data.pubDatetime?.toLocaleDateString(locale)}
                   </div>
                 </div>
               </div>
@@ -237,7 +237,7 @@ const youtubeCount = sources.filter(s => s.type === "youtube").length;
                 <div>
                   <div class="peek-prow-title">{post.data.title}</div>
                   <div class="peek-prow-sub">
-                    {post.data.pubDate?.toLocaleDateString(locale)}
+                    {post.data.pubDatetime?.toLocaleDateString(locale)}
                   </div>
                 </div>
               </div>

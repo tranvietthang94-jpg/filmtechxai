@@ -24,6 +24,12 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
+# Force UTF-8 encoding for HTML files
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Content-Type = "text/html; charset=utf-8"
+
 # Cache static assets
 [[headers]]
   for = "/assets/*"
