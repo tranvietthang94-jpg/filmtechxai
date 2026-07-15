@@ -1,50 +1,32 @@
 ---
-title: "Chào mừng đến với filmtechxai"
-description: "Tổng hợp tin tức AI và thiết bị ngành Film mỗi ngày từ các nguồn uy tín trên thế giới."
+title: "Chào mừng đến với filmtechXAI"
+description: "Bản tin tổng hợp về AI, công nghệ làm phim và thiết bị sáng tạo từ các nguồn quốc tế đã chọn lọc."
 pubDatetime: 2026-07-13T00:00:00+07:00
-author: "filmtechxai"
+author: "filmtechXAI"
 tags: ["welcome", "ai", "film"]
 ogImage: ""
 featured: true
 draft: false
 ---
 
-## filmtechxai — Liếc phát biết
+## filmtechXAI — AI x Film Tech
 
-Chào mừng bạn đến với **filmtechxai** — trang tổng hợp tin tức tự động về **Trí tuệ nhân tạo (AI)** và **Thiết bị ngành Film**.
+**filmtechXAI** giúp bạn theo dõi nhanh những chuyển động mới trong **trí tuệ nhân tạo**, **công nghệ làm phim**, **camera**, **workflow hậu kỳ** và **thiết bị sáng tạo**.
 
-### 🤖 Tin tức AI
+Trang được thiết kế như một bảng tin gọn: mở ra, quét tiêu đề, biết nguồn, chọn bài đáng đọc và đi thẳng đến nội dung gốc.
 
-Chúng tôi tự động tổng hợp từ các nguồn uy tín:
-- OpenAI Blog
-- Google AI Blog
-- Anthropic
-- The Verge AI
-- TechCrunch AI
-- Ars Technica
-- MIT Technology Review
-- VentureBeat AI
+## Nguồn AI
 
-### 🎬 Thiết bị ngành Film
+filmtechXAI theo dõi các nguồn như OpenAI Blog, Google AI Blog, Anthropic, Hugging Face, The Verge AI, TechCrunch AI, Ars Technica, MIT Technology Review và VentureBeat AI.
 
-Cập nhật từ các trang chuyên ngành:
-- PetaPixel
-- DPReview
-- No Film School
-- Cinema5D
-- Red Shark News
+## Nguồn film tech
 
-### 📺 YouTube Channels
+Các nguồn film/video tech gồm PetaPixel, DPReview, No Film School, Cinema5D, Red Shark News, Filmmaker IQ, Shotdeck và StudioBinder.
 
-Video từ các kênh công nghệ hàng đầu:
-- MKBHD
-- Linus Tech Tips
-- Dave2D
-- Mrwhosetheboss
-- Gerald Undone
+## Video và kênh chuyên môn
+
+Hệ thống cũng có thể lấy video mới từ những kênh như MKBHD, Linus Tech Tips, Dave2D, Mrwhosetheboss, Gerald Undone và CineD qua YouTube Data API khi có quota miễn phí.
 
 ---
 
-**Nội dung được cập nhật tự động mỗi ngày.** Không có người viết — tất cả tin tức được fetch từ nguồn RSS chính thức.
-
-Đọc đầy đủ tại nguồn gốc bằng cách click vào mỗi bài viết.
+Nội dung được tổng hợp tự động và luôn giữ liên kết đến nguồn phát hành chính thức. Bản quyền nội dung gốc thuộc về từng tác giả hoặc đơn vị xuất bản.

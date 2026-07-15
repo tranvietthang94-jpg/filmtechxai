@@ -3,9 +3,9 @@ import { defineAstroPaperConfig } from "./src/types/config";
 export default defineAstroPaperConfig({
   site: {
     url: "https://warehousevn.cloud/",
-    title: "filmtechxai",
-    description: "Tổng hợp tin tức AI và thiết bị ngành Film mỗi ngày",
-    author: "filmtechxai",
+    title: "filmtechXAI",
+    description: "Tổng hợp tin tức AI, công nghệ làm phim và thiết bị sáng tạo mỗi ngày",
+    author: "filmtechXAI",
     profile: "https://warehousevn.cloud",
     ogImage: "default-og.jpg",
     lang: "vi",

@@ -1,5 +1,5 @@
 /**
- * Danh sách nguồn RSS cho filmtechxai
+ * Danh sách nguồn RSS cho filmtechXAI
  * Tự động fetch tin tức AI và thiết bị ngành Film mỗi ngày
  */
 
@@ -31,8 +31,8 @@ export const RSS_SOURCES: RssSource[] = [
     language: "en",
   },
   {
-    name: "Anthropic",
-    url: "https://www.anthropic.com/rss.xml",
+    name: "AWS Machine Learning Blog",
+    url: "https://aws.amazon.com/blogs/machine-learning/feed/",
     category: "ai",
     language: "en",
   },
@@ -87,26 +87,26 @@ export const RSS_SOURCES: RssSource[] = [
     language: "en",
   },
   {
-    name: "DPReview",
-    url: "https://www.dpreview.com/feeds/news/latest",
+    name: "Newsshooter",
+    url: "https://www.newsshooter.com/feed/",
     category: "film",
     language: "en",
   },
   {
-    name: "No Film School",
-    url: "https://nofilmschool.com/rss.xml",
+    name: "CineD",
+    url: "https://www.cined.com/feed/",
     category: "film",
     language: "en",
   },
   {
-    name: "Cinema5D",
-    url: "https://cine5d.com/feed/",
+    name: "ProVideo Coalition",
+    url: "https://www.provideocoalition.com/feed/",
     category: "film",
     language: "en",
   },
   {
-    name: "Red Shark News",
-    url: "https://www.redsharknews.com/feed",
+    name: "fxguide",
+    url: "https://www.fxguide.com/feed/",
     category: "film",
     language: "en",
   },
@@ -117,14 +117,14 @@ export const RSS_SOURCES: RssSource[] = [
     language: "en",
   },
   {
-    name: "Shotdeck",
-    url: "https://shotdeck.com/blog/feed/",
+    name: "Y.M.Cinema",
+    url: "https://ymcinema.com/feed/",
     category: "film",
     language: "en",
   },
   {
-    name: "StudioBinder",
-    url: "https://www.studiobinder.com/blog/feed/",
+    name: "Filmmaker Magazine",
+    url: "https://www.filmmakermagazine.com/feed/",
     category: "film",
     language: "en",
   },
@@ -139,7 +139,7 @@ export const YOUTUBE_CHANNELS: YoutubeChannel[] = [
   },
   {
     name: "Linus Tech Tips",
-    channelId: "UCXuqSBlHAE6Xw-yeVR0TjDw",
+    channelId: "UCXuqSBlHAE6Xw-yeJA0Tunw",
     category: "youtube",
   },
   {
@@ -149,17 +149,17 @@ export const YOUTUBE_CHANNELS: YoutubeChannel[] = [
   },
   {
     name: "Mrwhosetheboss",
-    channelId: "UCMiJRAwDNSNzuYeN2eWa0lA",
+    channelId: "UCMiJRAwDNSNzuYeN2uWa0pA",
     category: "youtube",
   },
   {
     name: "Gerald Undone",
-    channelId: "UC0vhkS1hWQc7cK1YnKjKz1g",
+    channelId: "UC09qASY4ixFS-KXIH6Nw0rg",
     category: "youtube",
   },
   {
-    name: "Cinema5D",
-    channelId: "UCY1kGpU4Q0zWWw_1g-jB7AA",
+    name: "CineD",
+    channelId: "UCNz7Bd4cOw7f19Sz6nQjZNQ",
     category: "youtube",
   },
 ];
@@ -167,17 +167,23 @@ export const YOUTUBE_CHANNELS: YoutubeChannel[] = [
 /**
  * Lấy danh sách nguồn theo category
  */
-export function getSourcesByCategory(category: "ai" | "film" | "youtube"): RssSource[] {
-  return RSS_SOURCES.filter((source) => source.category === category);
+export function getSourcesByCategory(
+  category: "ai" | "film" | "youtube"
+): RssSource[] {
+  return RSS_SOURCES.filter(source => source.category === category);
 }
 
 /**
  * Đếm số nguồn theo category
  */
-export function countSourcesByCategory(): { ai: number; film: number; youtube: number } {
+export function countSourcesByCategory(): {
+  ai: number;
+  film: number;
+  youtube: number;
+} {
   return {
-    ai: RSS_SOURCES.filter((s) => s.category === "ai").length,
-    film: RSS_SOURCES.filter((s) => s.category === "film").length,
+    ai: RSS_SOURCES.filter(s => s.category === "ai").length,
+    film: RSS_SOURCES.filter(s => s.category === "film").length,
     youtube: YOUTUBE_CHANNELS.length,
   };
 }

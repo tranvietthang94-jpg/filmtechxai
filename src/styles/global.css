@@ -47,7 +47,7 @@
 
 /* peek.vn custom styles */
 .peek-header {
-  @apply sticky top-0 z-50 border-b border-border;
+  @apply border-border sticky top-0 z-50 border-b;
   backdrop-filter: blur(10px);
   background: color-mix(in srgb, var(--background) 85%, transparent);
 }
@@ -68,25 +68,25 @@
 }
 
 .peek-logo-word {
-  font-family: var(--font-montserrat);
-  @apply text-2xl font-extrabold tracking-tighter;
-  letter-spacing: -0.07em;
+  font-family: var(--font-grotesk);
+  @apply text-xl font-bold sm:text-2xl;
+  letter-spacing: 0;
 }
 
 .peek-logo-tag {
   @apply text-xs font-medium whitespace-nowrap;
   color: var(--muted-foreground);
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
 }
 
 .peek-search {
-  @apply flex items-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm;
+  @apply border-border flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm;
   background: var(--surface-2);
   color: var(--muted-foreground);
 }
 
 .peek-search input {
-  @apply flex-1 bg-transparent border-none outline-none text-sm;
+  @apply flex-1 border-none bg-transparent text-sm outline-none;
   color: var(--foreground);
 }
 
@@ -95,11 +95,14 @@
 }
 
 .peek-icon-btn {
-  @apply flex items-center justify-center rounded-xl border border-border text-muted-foreground;
+  @apply border-border text-muted-foreground flex items-center justify-center rounded-xl border;
   width: 38px;
   height: 38px;
   background: var(--surface-2);
-  transition: transform 0.12s, background 0.12s, color 0.12s;
+  transition:
+    transform 0.12s,
+    background 0.12s,
+    color 0.12s;
 }
 
 .peek-icon-btn:active {
@@ -114,7 +117,7 @@
 }
 
 .peek-sidebar {
-  @apply sticky top-[86px] hidden lg:block overflow-y-auto;
+  @apply sticky top-[86px] hidden overflow-y-auto lg:block;
   width: 212px;
   max-height: calc(100vh - 100px);
   scrollbar-width: none;
@@ -125,7 +128,7 @@
 }
 
 .peek-nav-item {
-  @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-semibold cursor-pointer;
+  @apply flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-semibold;
   color: var(--muted-foreground);
   border: 1px solid transparent;
 }
@@ -141,12 +144,12 @@
 }
 
 .peek-side-title {
-  @apply flex justify-between items-center text-[10px] font-bold uppercase tracking-wider px-3 mt-5 mb-2;
+  @apply mt-5 mb-2 flex items-center justify-between px-3 text-[10px] font-bold tracking-wider uppercase;
   color: var(--muted-foreground);
 }
 
 .peek-src-item {
-  @apply flex items-center gap-3 rounded-[10px] px-3 py-2 text-sm font-semibold cursor-pointer;
+  @apply flex cursor-pointer items-center gap-3 rounded-[10px] px-3 py-2 text-sm font-semibold no-underline;
   color: var(--muted-foreground);
   border: 1px solid transparent;
 }
@@ -163,13 +166,13 @@
 }
 
 .peek-src-badge {
-  @apply rounded-full px-1.5 py-0.5 text-[11px] font-bold leading-none;
+  @apply rounded-full px-1.5 py-0.5 text-[11px] leading-none font-bold;
   background: var(--accent);
   color: var(--accent-foreground);
 }
 
 .peek-follow-row {
-  @apply flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm cursor-pointer;
+  @apply flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm no-underline;
   color: var(--muted-foreground);
 }
 
@@ -179,51 +182,51 @@
 }
 
 .peek-follow-avatar {
-  @apply flex-none flex items-center justify-center rounded-[6px_6px_8px_1px] text-[11px] font-bold text-white;
+  @apply flex flex-none items-center justify-center rounded-[6px_6px_8px_1px] text-[11px] font-bold text-white;
   width: 22px;
   height: 22px;
 }
 
 .peek-follow-logo {
-  @apply object-contain bg-white p-0.5;
+  @apply bg-white object-contain p-0.5;
 }
 
 .peek-follow-channel {
-  @apply object-cover rounded-full;
+  @apply rounded-full object-cover;
 }
 
 .peek-follow-yt {
-  @apply text-[9px] text-red-400 mr-[-4px];
+  @apply mr-[-4px] text-[9px] text-red-400;
 }
 
 .peek-follow-etc {
-  @apply text-xs italic px-3 py-2;
+  @apply px-3 py-2 text-xs italic;
   color: var(--muted-foreground);
 }
 
 .peek-feed {
-  @apply flex flex-col gap-4 flex-1 min-w-0;
+  @apply flex min-w-0 flex-1 flex-col gap-4;
   max-width: 720px;
   margin: 0 auto;
 }
 
 .peek-rail {
-  @apply sticky top-[86px] hidden xl:flex flex-col gap-4;
+  @apply sticky top-[86px] hidden flex-col gap-4 xl:flex;
   width: 322px;
   flex: none;
 }
 
 .peek-panel {
-  @apply rounded-[14px_14px_19px_1px] border border-border p-4;
+  @apply border-border rounded-[14px_14px_19px_1px] border p-4;
   background: var(--surface);
 }
 
 .peek-panel-title {
-  @apply flex items-center gap-2 text-sm font-bold mb-1.5;
+  @apply mb-1.5 flex items-center gap-2 text-sm font-bold;
 }
 
 .peek-panel-live {
-  @apply flex items-center gap-1 ml-auto text-[10px] font-bold tracking-wider;
+  @apply ml-auto flex items-center gap-1 text-[10px] font-bold tracking-wider;
   color: var(--heat);
   animation: liveBlink 2s ease-in-out infinite;
 }
@@ -236,7 +239,7 @@
 }
 
 .peek-prow {
-  @apply flex gap-2.5 py-2 border-b border-border;
+  @apply border-border flex gap-2.5 border-b py-2 no-underline;
 }
 
 .peek-prow:last-child {
@@ -244,7 +247,7 @@
 }
 
 .peek-prow-logo {
-  @apply flex-none object-contain bg-white rounded-[6px_6px_8px_1px] p-0.5 mt-0.5;
+  @apply mt-0.5 flex-none rounded-[6px_6px_8px_1px] bg-white object-contain p-0.5;
   width: 22px;
   height: 22px;
 }
@@ -255,7 +258,7 @@
 }
 
 .peek-prow-sub {
-  @apply text-[11px] mt-0.5;
+  @apply mt-0.5 text-[11px];
   color: var(--muted-foreground);
 }
 
@@ -274,19 +277,34 @@
 }
 
 @keyframes tickerScroll {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
 }
 
 @keyframes liveBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
 }
 
 @keyframes livePulse {
-  0% { box-shadow: 0 0 #ff4d2e80; }
-  70% { box-shadow: 0 0 0 7px #ff4d2e00; }
-  100% { box-shadow: 0 0 #ff4d2e00; }
+  0% {
+    box-shadow: 0 0 #ff4d2e80;
+  }
+  70% {
+    box-shadow: 0 0 0 7px #ff4d2e00;
+  }
+  100% {
+    box-shadow: 0 0 #ff4d2e00;
+  }
 }
 
 .peek-hero {
@@ -297,12 +315,12 @@
 }
 
 .peek-hero-flame {
-  @apply absolute top-[-16px] right-[-10px] text-[130px] leading-none pointer-events-none;
+  @apply pointer-events-none absolute top-[-16px] right-[-10px] text-[130px] leading-none;
   opacity: 0.16;
 }
 
 .peek-hero-meta {
-  @apply flex flex-wrap items-center gap-2 text-[13px] font-medium mb-3 relative;
+  @apply relative mb-3 flex flex-wrap items-center gap-2 text-[13px] font-medium;
   color: #0b0b0f94;
 }
 
@@ -316,20 +334,20 @@
 
 .peek-hero-title {
   font-family: var(--font-grotesk);
-  @apply text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-3 relative;
+  @apply relative mb-3 text-2xl leading-tight font-bold sm:text-3xl lg:text-4xl;
   letter-spacing: -0.02em;
   max-width: 94%;
 }
 
 .peek-hero-summary {
-  @text-base leading-relaxed mb-4 relative;
+  @apply relative mb-4 text-base leading-relaxed;
   opacity: 0.9;
   font-size: 15px;
   line-height: 1.55;
 }
 
 .peek-hero-foot {
-  @apply flex flex-wrap items-center gap-3 relative;
+  @apply relative flex flex-wrap items-center gap-3;
 }
 
 .peek-hero-sources {
@@ -348,7 +366,7 @@
 }
 
 .peek-savatar-logo {
-  @apply object-contain bg-white p-0.5;
+  @apply bg-white object-contain p-0.5;
 }
 
 .peek-hero-srctext {
@@ -357,13 +375,13 @@
 }
 
 .peek-hero-btn {
-  @apply ml-auto rounded-full border-none px-4 py-2.5 text-sm font-bold cursor-pointer;
+  @apply ml-auto cursor-pointer rounded-full border-none px-4 py-2.5 text-sm font-bold;
   background: var(--accent-foreground);
   color: var(--accent);
 }
 
 .peek-card {
-  @apply flex flex-col gap-3 rounded-xl border border-border p-4 cursor-pointer;
+  @apply border-border flex cursor-pointer flex-col gap-3 rounded-xl border p-4;
   background: var(--surface);
 }
 
@@ -376,7 +394,7 @@
 }
 
 .peek-card-thumb {
-  @apply block rounded-t-xl -mx-4 -mt-4 mb-0;
+  @apply -mx-4 -mt-4 mb-0 block rounded-t-xl;
   aspect-ratio: 16/9;
   object-fit: cover;
   background: var(--surface-2);
@@ -384,15 +402,15 @@
 }
 
 .peek-video-thumb {
-  @apply relative overflow-hidden rounded-t-xl -mx-4 -mt-4;
+  @apply relative -mx-4 -mt-4 overflow-hidden rounded-t-xl;
 }
 
 .peek-video-thumb .peek-card-thumb {
-  @apply rounded-none w-full m-0;
+  @apply m-0 w-full rounded-none;
 }
 
 .peek-video-play {
-  @apply absolute top-1/2 left-1/2 flex items-center justify-center rounded-full text-white text-xl;
+  @apply absolute top-1/2 left-1/2 flex items-center justify-center rounded-full text-xl text-white;
   width: 54px;
   height: 54px;
   padding-left: 4px;
@@ -410,12 +428,12 @@
 }
 
 .peek-card-title {
-  @apply text-lg font-semibold leading-snug m-0;
+  @apply m-0 text-lg leading-snug font-semibold;
   font-size: 18px;
 }
 
 .peek-card-summary {
-  @apply text-sm leading-relaxed m-0 line-clamp-2;
+  @apply m-0 line-clamp-2 text-sm leading-relaxed;
   color: var(--muted-foreground);
 }
 
@@ -443,7 +461,7 @@
 }
 
 .peek-x-media {
-  @apply block w-full max-h-[380px] rounded-xl object-cover;
+  @apply block max-h-[380px] w-full rounded-xl object-cover;
   background: var(--surface-2);
 }
 
@@ -469,7 +487,7 @@
 }
 
 .peek-mini-logo {
-  @apply object-contain bg-white p-0.5;
+  @apply bg-white object-contain p-0.5;
 }
 
 .peek-meta-hot {
@@ -482,11 +500,11 @@
 }
 
 .peek-site-footer {
-  @apply border-t border-border mt-10;
+  @apply border-border mt-10 border-t;
 }
 
 .peek-site-footer-inner {
-  @apply flex flex-wrap items-center gap-x-4 gap-y-2 max-w-3xl mx-auto px-5 py-6 text-[13px];
+  @apply mx-auto flex max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 px-5 py-6 text-[13px];
   color: var(--muted-foreground);
 }
 

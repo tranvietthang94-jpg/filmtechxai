@@ -1,17 +1,18 @@
 ---
 import { getCollection } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
-import IconRss from "@/assets/icons/IconRss.svg";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Card from "@/components/Card.astro";
 import LinkButton from "@/components/LinkButton.astro";
+import { RSS_SOURCES, YOUTUBE_CHANNELS } from "@/config/sources";
+import { getPostUrl } from "@/utils/getPostPaths";
 import { getSortedPosts } from "@/utils/getSortedPosts";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
 
-const { socials, posts: postsConfig } = config;
+const { posts: postsConfig } = config;
 
 const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
@@ -21,155 +22,256 @@ const sortedPosts = getSortedPosts(posts);
 const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
 const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 const homePath = getRelativeLocaleUrl(locale, "");
+const searchPath = getRelativeLocaleUrl(locale, "search");
+const tagAiPath = getRelativeLocaleUrl(locale, "tags/ai");
+const tagFilmPath = getRelativeLocaleUrl(locale, "tags/film");
+const youtubeSearchPath = `${searchPath}?q=youtube`;
 
-// Sample data sources for sidebar
-const sources = [
-  { name: "The Verge", domain: "theverge.com", type: "press" },
-  { name: "TechCrunch", domain: "techcrunch.com", type: "press" },
-  { name: "Ars Technica", domain: "arstechnica.com", type: "press" },
-  { name: "Engadget", domain: "engadget.com", type: "press" },
-  { name: "MacRumors", domain: "macrumors.com", type: "press" },
-  { name: "Tom's Hardware", domain: "tomshardware.com", type: "press" },
-  { name: "MKBHD", domain: "youtube.com/@mkbhd", type: "youtube" },
-  { name: "Linus Tech Tips", domain: "youtube.com/@LinusTechTips", type: "youtube" },
-  { name: "Dave2D", domain: "youtube.com/@Dave2D", type: "youtube" },
-  { name: "Mrwhosetheboss", domain: "youtube.com/@Mrwhosetheboss", type: "youtube" },
-];
+type SourceKind = "ai" | "film" | "youtube" | "site";
 
-const pressCount = sources.filter(s => s.type === "press").length;
-const youtubeCount = sources.filter(s => s.type === "youtube").length;
+type FeedSource = {
+  name: string;
+  domain: string;
+  href: string;
+  kind: SourceKind;
+};
+
+function getDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url.replace(/^https?:\/\//, "").split("/")[0];
+  }
+}
+
+function getOrigin(url: string): string {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return url;
+  }
+}
+
+const rssSources: FeedSource[] = RSS_SOURCES.map(source => ({
+  name: source.name,
+  domain: getDomain(source.url),
+  href: getOrigin(source.url),
+  kind: source.category,
+}));
+
+const youtubeSources: FeedSource[] = YOUTUBE_CHANNELS.map(channel => ({
+  name: channel.name,
+  domain: "youtube.com",
+  href: `https://www.youtube.com/channel/${channel.channelId}`,
+  kind: "youtube",
+}));
+
+const sources = [...rssSources, ...youtubeSources];
+const visibleSources = sources.slice(0, 14);
+const hiddenSourceCount = sources.length - visibleSources.length;
+
+const sourceByName = new Map(
+  sources.map(source => [source.name.toLowerCase(), source])
+);
+
+const fallbackSource: FeedSource = {
+  name: config.site.title,
+  domain: "warehousevn.cloud",
+  href: config.site.url,
+  kind: "site",
+};
+
+const sourceLogoUrl = (source: FeedSource) =>
+  `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
+    source.domain
+  )}&sz=64`;
+
+const getPostSource = (post: (typeof sortedPosts)[number]) =>
+  sourceByName.get(post.data.author.toLowerCase()) ?? fallbackSource;
+
+const sourceCounts = {
+  ai: RSS_SOURCES.filter(source => source.category === "ai").length,
+  film: RSS_SOURCES.filter(source => source.category === "film").length,
+  youtube: YOUTUBE_CHANNELS.length,
+};
+
+const dateFormatter = new Intl.DateTimeFormat(locale, {
+  dateStyle: "medium",
+  timeZone: config.site.timezone,
+});
+const todayKeyFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: config.site.timezone,
+});
+const todayKey = todayKeyFormatter.format(new Date());
+const formatPostDate = (date: Date) => dateFormatter.format(date);
+const todayPosts = recentPosts.filter(
+  post => todayKeyFormatter.format(post.data.pubDatetime) === todayKey
+);
+const hotPosts = recentPosts.slice(0, 5);
+const railTodayPosts = (todayPosts.length > 0 ? todayPosts : recentPosts).slice(
+  0,
+  4
+);
+const heroSources = sources.slice(0, 4);
 ---
 
 <Layout>
   <Header />
 
-  <!-- peek.vn 3-column layout -->
   <div class="peek-layout">
-    <!-- Left Sidebar -->
     <aside class="peek-sidebar">
       <nav>
         <a href={homePath} class="peek-nav-item active">
           <span>🏠</span> Trang chủ
         </a>
         <a href={getRelativeLocaleUrl(locale, "posts")} class="peek-nav-item">
-          <span>🕐</span> {t.nav.posts}
+          <span>🕒</span>
+          {t.nav.posts}
         </a>
         <a href={getRelativeLocaleUrl(locale, "tags")} class="peek-nav-item">
-          <span>🏷️</span> {t.nav.tags}
+          <span>🏷️</span>
+          {t.nav.tags}
         </a>
         <a href={getRelativeLocaleUrl(locale, "about")} class="peek-nav-item">
-          <span>ℹ️</span> {t.nav.about}
+          <span>ℹ️</span>
+          {t.nav.about}
         </a>
       </nav>
 
       <div class="peek-side-title">
-        <span>LỌC NGUỒN</span>
+        <span>Lọc bảng tin</span>
       </div>
       <nav>
-        <div class="peek-src-item active">
-          <span>◎</span>
+        <a href={homePath} class="peek-src-item active">
+          <span>●</span>
           <span style="flex: 1;">Tất cả nguồn</span>
-        </div>
-        <div class="peek-src-item">
-          <span>📰</span>
-          <span style="flex: 1;">Báo chí</span>
-          <span class="peek-src-badge">{pressCount}</span>
-        </div>
-        <div class="peek-src-item">
+          <span class="peek-src-badge">{sources.length}</span>
+        </a>
+        <a href={tagAiPath} class="peek-src-item">
+          <span>AI</span>
+          <span style="flex: 1;">Trí tuệ nhân tạo</span>
+          <span class="peek-src-badge">{sourceCounts.ai}</span>
+        </a>
+        <a href={tagFilmPath} class="peek-src-item">
+          <span>🎬</span>
+          <span style="flex: 1;">Film tech</span>
+          <span class="peek-src-badge">{sourceCounts.film}</span>
+        </a>
+        <a href={youtubeSearchPath} class="peek-src-item">
           <span>▶</span>
           <span style="flex: 1;">YouTube</span>
-          <span class="peek-src-badge">{youtubeCount}</span>
-        </div>
+          <span class="peek-src-badge">{sourceCounts.youtube}</span>
+        </a>
       </nav>
 
       <div class="peek-side-title">
-        <span>THEO DÕI</span>
-        <span>{sources.length}+</span>
+        <span>Nguồn đang theo dõi</span>
+        <span>{sources.length}</span>
       </div>
       <nav>
-        {sources.map(source => (
-          <div class="peek-follow-row">
-            <img
-              class={`peek-follow-avatar ${source.type === "youtube" ? "peek-follow-channel" : "peek-follow-logo"}`}
-              src={`https://www.google.com/s2/favicons?domain=${source.domain}&sz=64`}
-              alt={source.name}
-            />
-            {source.type === "youtube" && <span class="peek-follow-yt">▶</span>}
-            {source.name}
-          </div>
-        ))}
-        <div class="peek-follow-etc">…và hơn 20 nguồn uy tín khác</div>
+        {
+          visibleSources.map(source => (
+            <a
+              class="peek-follow-row"
+              href={source.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img
+                class={`peek-follow-avatar ${
+                  source.kind === "youtube"
+                    ? "peek-follow-channel"
+                    : "peek-follow-logo"
+                }`}
+                src={sourceLogoUrl(source)}
+                alt={source.name}
+              />
+              {source.kind === "youtube" && (
+                <span class="peek-follow-yt">▶</span>
+              )}
+              {source.name}
+            </a>
+          ))
+        }
+        {
+          hiddenSourceCount > 0 && (
+            <div class="peek-follow-etc">
+              …và {hiddenSourceCount} nguồn uy tín khác
+            </div>
+          )
+        }
       </nav>
     </aside>
 
-    <!-- Main Feed -->
     <main id="main-content" class="peek-feed">
-      <!-- Hero Section -->
       <section id="hero" class="peek-hero">
         <span class="peek-hero-flame">🔥</span>
         <div class="peek-hero-meta">
           <span class="peek-src-type">📰</span>
-          <span>filmtechxai</span>
+          <span>{config.site.title}</span>
           <span class="dot">·</span>
-          <span>Tin tức AI & Film</span>
-          <span class="peek-hero-hot">🔥 Nóng nhất</span>
+          <span>AI, film tech và thiết bị sáng tạo</span>
+          <span class="peek-hero-hot">Cập nhật mỗi ngày</span>
         </div>
         <h1 class="peek-hero-title">
-          filmtechxai — Liếc phát biết
+          {config.site.title} — bản tin nhanh cho người làm nội dung
         </h1>
         <p class="peek-hero-summary">
-          AstroPaper là một blog theme minimal, responsive, accessible và SEO-friendly. 
-          Theme này tuân theo các best practices và cung cấp accessibility out of the box.
+          Theo dõi các chuyển động mới về AI, camera, hậu kỳ, phần mềm sáng tạo
+          và thiết bị làm phim từ những nguồn quốc tế đã chọn lọc.
         </p>
         <div class="peek-hero-foot">
           <span class="peek-hero-sources">
-            <img class="peek-savatar peek-savatar-logo" src="https://www.google.com/s2/favicons?domain=astro.build&sz=64" alt="" />
+            {
+              heroSources.map(source => (
+                <img
+                  class="peek-savatar peek-savatar-logo"
+                  src={sourceLogoUrl(source)}
+                  alt={source.name}
+                />
+              ))
+            }
           </span>
-          <span class="peek-hero-srctext">Astro Framework</span>
+          <span class="peek-hero-srctext">
+            {sources.length} nguồn đang theo dõi
+          </span>
           <a href={getRelativeLocaleUrl(locale, "posts")} class="peek-hero-btn">
-            Xem bài viết →
+            Xem bảng tin →
           </a>
         </div>
       </section>
 
-      <!-- Featured Posts -->
       {
         featuredPosts.length > 0 && (
           <section id="featured">
-            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+            <h2 class="mb-4 flex items-center gap-2 text-xl font-bold">
               <span>⭐</span> {t.home.featured}
             </h2>
             <ul class="flex flex-col gap-4">
               {featuredPosts.map(data => (
-                <li>
-                  <Card variant="h3" {...data} />
-                </li>
+                <Card variant="h3" {...data} />
               ))}
             </ul>
           </section>
         )
       }
 
-      <!-- Recent Posts -->
       {
         recentPosts.length > 0 && (
           <section id="recent-posts">
-            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-              <span>🕐</span> {t.home.recentPosts}
+            <h2 class="mb-4 flex items-center gap-2 text-xl font-bold">
+              <span>🕒</span> {t.home.recentPosts}
             </h2>
             <ul class="flex flex-col gap-4">
               {recentPosts.slice(0, postsConfig.perIndex).map(data => (
-                <li>
-                  <Card variant="h3" {...data} />
-                </li>
+                <Card variant="h3" {...data} />
               ))}
             </ul>
           </section>
         )
       }
 
-      <!-- View All Posts -->
-      <div class="text-center my-8">
+      <div class="my-8 text-center">
         <LinkButton
           href={getRelativeLocaleUrl(locale, "posts")}
           class="peek-hero-btn inline-block"
@@ -181,67 +283,89 @@ const youtubeCount = sources.filter(s => s.type === "youtube").length;
       <div class="feed-sentinel"></div>
     </main>
 
-    <!-- Right Rail -->
     <aside class="peek-rail">
       <section class="peek-panel">
         <div class="peek-panel-title">
-          🔥 Tin nóng
+          🔥 Đang chú ý
           <span class="peek-panel-live">
             <span class="peek-live-dot"></span> LIVE
           </span>
         </div>
-        {recentPosts.slice(0, 5).map(post => (
-          <div class="peek-prow">
-            <img
-              class="peek-prow-logo"
-              src={`https://www.google.com/s2/favicons?domain=astro.build&sz=64`}
-              alt=""
-            />
-            <div>
-              <div class="peek-prow-title">{post.data.title}</div>
-              <div class="peek-prow-sub">
-                {post.data.pubDatetime?.toLocaleDateString(locale)}
-              </div>
-            </div>
-          </div>
-        ))}
+        {
+          hotPosts.map(post => {
+            const source = getPostSource(post);
+            return (
+              <a
+                class="peek-prow"
+                href={getPostUrl(post.id, post.filePath, locale)}
+              >
+                <img
+                  class="peek-prow-logo"
+                  src={sourceLogoUrl(source)}
+                  alt={source.name}
+                />
+                <div>
+                  <div class="peek-prow-title">{post.data.title}</div>
+                  <div class="peek-prow-sub">
+                    {source.name} · {formatPostDate(post.data.pubDatetime)}
+                  </div>
+                </div>
+              </a>
+            );
+          })
+        }
       </section>
 
       <section class="peek-panel">
         <div class="peek-panel-title">🗞️ Tin hôm nay</div>
         <div class="peek-ticker-view">
           <div class="peek-ticker-track">
-            {recentPosts.slice(0, 4).map(post => (
-              <div class="peek-prow">
-                <img
-                  class="peek-prow-logo"
-                  src={`https://www.google.com/s2/favicons?domain=astro.build&sz=64`}
-                  alt=""
-                />
-                <div>
-                  <div class="peek-prow-title">{post.data.title}</div>
-                  <div class="peek-prow-sub">
-                    {post.data.pubDatetime?.toLocaleDateString(locale)}
-                  </div>
-                </div>
-              </div>
-            ))}
-            <!-- Duplicate for infinite scroll effect -->
-            {recentPosts.slice(0, 4).map(post => (
-              <div class="peek-prow">
-                <img
-                  class="peek-prow-logo"
-                  src={`https://www.google.com/s2/favicons?domain=astro.build&sz=64`}
-                  alt=""
-                />
-                <div>
-                  <div class="peek-prow-title">{post.data.title}</div>
-                  <div class="peek-prow-sub">
-                    {post.data.pubDatetime?.toLocaleDateString(locale)}
-                  </div>
-                </div>
-              </div>
-            ))}
+            {
+              railTodayPosts.map(post => {
+                const source = getPostSource(post);
+                return (
+                  <a
+                    class="peek-prow"
+                    href={getPostUrl(post.id, post.filePath, locale)}
+                  >
+                    <img
+                      class="peek-prow-logo"
+                      src={sourceLogoUrl(source)}
+                      alt={source.name}
+                    />
+                    <div>
+                      <div class="peek-prow-title">{post.data.title}</div>
+                      <div class="peek-prow-sub">
+                        {source.name} · {formatPostDate(post.data.pubDatetime)}
+                      </div>
+                    </div>
+                  </a>
+                );
+              })
+            }
+            {
+              railTodayPosts.map(post => {
+                const source = getPostSource(post);
+                return (
+                  <a
+                    class="peek-prow"
+                    href={getPostUrl(post.id, post.filePath, locale)}
+                  >
+                    <img
+                      class="peek-prow-logo"
+                      src={sourceLogoUrl(source)}
+                      alt={source.name}
+                    />
+                    <div>
+                      <div class="peek-prow-title">{post.data.title}</div>
+                      <div class="peek-prow-sub">
+                        {source.name} · {formatPostDate(post.data.pubDatetime)}
+                      </div>
+                    </div>
+                  </a>
+                );
+              })
+            }
           </div>
         </div>
       </section>

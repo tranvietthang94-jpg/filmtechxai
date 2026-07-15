@@ -92,7 +92,7 @@ Documentation can be read in two formats\_ _markdown_ & _blog post_.
 **Static Search** - [Pagefind](https://pagefind.app/)  
 **Icons** - [Tablers](https://tabler-icons.io/)  
 **Code Formatting** - [Prettier](https://prettier.io/)  
-**Deployment** - [Cloudflare Pages](https://pages.cloudflare.com/)  
+**Deployment** - [GitHub Pages](https://pages.github.com/)
 **Linting** - [ESLint](https://eslint.org)  
 **Dynamic OG images** - [Satori](https://github.com/vercel/satori) + [Sharp](https://sharp.pixelplumbing.com/) + [Astro Fonts](https://docs.astro.build/en/guides/fonts/)
 
@@ -101,9 +101,6 @@ Documentation can be read in two formats\_ _markdown_ & _blog post_.
 You can start using this project locally by running the following command in your desired directory:
 
 ```bash
-# pnpm
-pnpm create astro@latest --template satnaing/astro-paper
-
 # npm
 npm create astro@latest -- --template satnaing/astro-paper
 
@@ -118,10 +115,10 @@ Then start the project by running the following commands:
 
 ```bash
 # install dependencies if you haven't done so in the previous step.
-pnpm install
+npm install
 
 # start running the project
-pnpm dev
+npm run dev
 ```
 
 ## Google Site Verification (optional)
@@ -144,14 +141,15 @@ export default defineAstroPaperConfig({
 
 All commands are run from the root of the project, from a terminal:
 
-| Command          | Action                                                                                                                           |
-| :--------------- | :------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm install`   | Installs dependencies                                                                                                            |
-| `pnpm dev`       | Starts local dev server at `localhost:4321`                                                                                      |
-| `pnpm build`     | Type-checks, builds the site, runs Pagefind indexing, and copies the index to `public/pagefind/`                                 |
-| `pnpm preview`   | Preview your build locally, before deploying                                                                                     |
-| `pnpm sync`      | Generates TypeScript types for all Astro modules. [Learn more](https://docs.astro.build/en/reference/cli-reference/#astro-sync). |
-| `pnpm astro ...` | Run CLI commands like `astro add`, `astro check`                                                                                 |
+| Command             | Action                                                                                                                           |
+| :------------------ | :------------------------------------------------------------------------------------------------------------------------------- |
+| `npm install`       | Installs dependencies                                                                                                            |
+| `npm run dev`       | Starts local dev server at `localhost:4321`                                                                                      |
+| `npm run build`     | Type-checks, builds the site, runs Pagefind indexing, and copies the index to `public/pagefind/`                                 |
+| `npm run preview`   | Preview your build locally, before deploying                                                                                     |
+| `npm run sync`      | Generates TypeScript types for all Astro modules. [Learn more](https://docs.astro.build/en/reference/cli-reference/#astro-sync). |
+| `npm run fetch:rss` | Fetches RSS and optional YouTube sources, then generates Markdown posts                                                          |
+| `npm run astro ...` | Run CLI commands like `astro add`, `astro check`                                                                                 |
 
 ## ✨ Feedback & Suggestions
 

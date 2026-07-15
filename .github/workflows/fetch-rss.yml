@@ -1,0 +1,73 @@
+name: Fetch RSS
+
+permissions:
+  contents: read
+
+on:
+  schedule:
+    # 06:17 Asia/Ho_Chi_Minh. Avoid minute 00, when scheduled jobs can be delayed.
+    - cron: "17 23 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: github-pages-production
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    name: Fetch feeds and commit posts
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch RSS and optional YouTube sources
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: npm run fetch:rss
+
+      - name: Build static site
+        run: npm run build
+
+      - name: Commit generated posts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- src/content/posts/_auto
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No new generated posts."
+          else
+            git commit -m "chore: update aggregated feeds"
+            git push
+          fi
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Deploy static site
+        id: deployment
+        uses: actions/deploy-pages@v4

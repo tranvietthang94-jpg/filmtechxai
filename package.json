@@ -3,13 +3,19 @@
   "type": "module",
   "version": "6.1.0",
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.22.3 || ^24.16.0 || >=26.3.0"
   },
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build && pagefind --site dist && node -e \"require('fs').cpSync('dist/pagefind','public/pagefind',{recursive:true})\"",
     "preview": "astro preview",
     "sync": "astro sync",
+    "fetch:rss": "tsx scripts/fetch-rss.ts",
+    "check:feeds": "tsx scripts/fetch-rss.ts --dry-run",
+    "ingest:news": "tsx scripts/ingest-news.ts",
+    "check:news": "tsx scripts/ingest-news.ts --dry-run",
+    "enrich:news": "tsx scripts/enrich-news.ts",
+    "test": "tsx --test tests/fetch-rss.test.ts tests/news-schema.test.ts tests/news-ingestion.test.ts tests/news-summarizer.test.ts tests/news-enrichment.test.ts",
     "astro": "astro",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
@@ -34,7 +40,6 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
-    "@netlify/functions": "^5.3.0",
     "@pagefind/default-ui": "^1.5.2",
     "@shikijs/transformers": "^4.3.0",
     "@tailwindcss/typography": "^0.5.20",

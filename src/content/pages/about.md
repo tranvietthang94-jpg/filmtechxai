@@ -1,37 +1,24 @@
 ---
-title: "About"
-description: "A bit about me and this blog."
+title: "Giới thiệu"
+description: "filmtechXAI là bản tin tổng hợp về AI, công nghệ làm phim và thiết bị sáng tạo."
 ---
 
-AstroPaper is a minimal, accessible and SEO-friendly blog theme built with [Astro](https://astro.build/) and [Tailwind CSS](https://tailwindcss.com/).
+**filmtechXAI** là bản tin tổng hợp dành cho người làm nội dung, filmmaker, editor, creator và đội ngũ sản xuất cần theo dõi nhanh các chuyển động mới trong AI, film tech và thiết bị sáng tạo.
 
-![Astro Paper](@/assets/images/astropaper-og.jpg)
+Trang thu thập bài viết từ các nguồn RSS và kênh YouTube đã chọn lọc, sau đó tổ chức lại thành một bảng tin gọn để bạn có thể quét nhanh tiêu đề, nguồn và thời điểm xuất bản.
 
-AstroPaper provides a solid foundation for blogs, or even portfolios\_ with full markdown support, built-in dark mode, and a clean layout that works out-of-the-box.
+## Nội dung theo dõi
 
-The blog posts in this theme also serve as guides, docs or example articles\_ making AstroPaper a flexible starting point for your next content-driven site.
+- Tin tức AI từ các phòng lab, công ty nền tảng và trang công nghệ lớn.
+- Công nghệ quay dựng, camera, ánh sáng, workflow hậu kỳ và thiết bị sản xuất.
+- Video mới từ các kênh công nghệ, camera và làm phim có uy tín.
 
-## Features
+## Nguyên tắc biên tập
 
-AstroPaper comes with a set of useful features that make content publishing easy and effective:
+- Luôn giữ nguồn gốc bài viết và điều hướng người đọc về nơi phát hành chính thức.
+- Ưu tiên nguồn có chuyên môn, thông tin rõ ràng và liên quan trực tiếp đến AI hoặc film tech.
+- Không thay thế báo gốc; filmtechXAI đóng vai trò chỉ mục, lọc nhanh và dẫn nguồn.
 
-- SEO-friendly
-- Fast performance
-- Light & dark mode
-- Highly customizable
-- Organizable blog posts
-- Responsive & accessible
-- Static search with [PageFind](https://pagefind.app/)
-- Automatic social image generation
+## Liên hệ
 
-and so much more.
-
-## Show your support
-
-If you like [AstroPaper](https://github.com/satnaing/astro-paper), consider giving it a star ⭐️.
-
-Found a bug 🐛 or have an improvement ✨ in mind? Feel free to open an [issue](https://github.com/satnaing/astro-paper/issues), submit a [pull request](https://github.com/satnaing/astro-paper/pulls) or start a [discussion](https://github.com/satnaing/astro-paper/discussions).
-
-If you find this theme helpful, you can also [sponsor me on GitHub](https://github.com/sponsors/satnaing) or [buy me a coffee](https://buymeacoffee.com/satnaing) to show your support — every penny counts.
-
-Kyay zuu! 🙏🏼
+Gửi góp ý, đề xuất nguồn tin hoặc phản hồi kỹ thuật qua email: [admin@warehousevn.cloud](mailto:admin@warehousevn.cloud).

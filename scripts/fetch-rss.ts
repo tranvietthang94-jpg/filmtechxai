@@ -1,15 +1,31 @@
 /**
- * Script fetch RSS từ các nguồn và tạo bài viết Markdown
- * Chạy tự động mỗi ngày qua Netlify Functions
+ * Fetch RSS/YouTube sources and generate Markdown posts.
+ *
+ * This script must run before the static site build. The scheduled GitHub
+ * Action commits generated posts so GitHub Pages can publish the static site
+ * from source.
  */
 
-import { RSS_SOURCES, YOUTUBE_CHANNELS, type RssSource } from "../src/config/sources";
-import { writeFileSync, existsSync, mkdirSync } from "fs";
+import {
+  RSS_SOURCES,
+  YOUTUBE_CHANNELS,
+  type RssSource,
+} from "../src/config/sources";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
+import { pathToFileURL } from "url";
 
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || "AIzaSyCqvCS_QkHxD7AF_KqNrvo4Q37kFtzi1SE";
+const logger = {
+  info(message = "") {
+    process.stdout.write(`${message}\n`);
+  },
+  error(message: string, detail?: unknown) {
+    const suffix = detail ? ` ${formatLogDetail(detail)}` : "";
+    process.stderr.write(`${message}${suffix}\n`);
+  },
+};
 
-interface RssItem {
+export interface RssItem {
   title: string;
   link: string;
   description: string;
@@ -19,13 +35,13 @@ interface RssItem {
   thumbnail?: string;
 }
 
-interface ParsedRss {
+export interface ParsedRss {
   title: string;
   link: string;
   items: RssItem[];
 }
 
-interface YoutubeVideo {
+export interface YoutubeVideo {
   title: string;
   link: string;
   description: string;
@@ -35,26 +51,102 @@ interface YoutubeVideo {
   viewCount: string;
 }
 
-/**
- * Parse RSS XML thành object
- */
-function parseRssXml(xml: string): ParsedRss {
+interface YouTubeApiThumbnail {
+  url?: string;
+}
+
+interface YouTubeApiItem {
+  id?: string;
+  contentDetails?: {
+    relatedPlaylists?: {
+      uploads?: string;
+    };
+  };
+  snippet?: {
+    resourceId?: {
+      videoId?: string;
+    };
+    title?: string;
+    description?: string;
+    publishedAt?: string;
+    thumbnails?: {
+      maxres?: YouTubeApiThumbnail;
+      high?: YouTubeApiThumbnail;
+      medium?: YouTubeApiThumbnail;
+    };
+  };
+  statistics?: {
+    viewCount?: string;
+  };
+}
+
+interface YouTubeApiResponse {
+  items?: YouTubeApiItem[];
+}
+
+const FEED_FETCH_ATTEMPTS = 3;
+const MAX_SOURCE_EXCERPT_LENGTH = 900;
+
+function formatLogDetail(detail: unknown): string {
+  if (detail instanceof Error) {
+    return detail.stack ?? detail.message;
+  }
+
+  if (typeof detail === "string") {
+    return detail;
+  }
+
+  return JSON.stringify(detail);
+}
+
+function getYoutubeApiKey(): string | null {
+  const apiKey = process.env.YOUTUBE_API_KEY?.trim();
+
+  if (!apiKey) {
+    logger.info("YOUTUBE_API_KEY is not set. Skipping YouTube sources.");
+    return null;
+  }
+
+  return apiKey;
+}
+
+export function isFeedDocument(xml: string): boolean {
+  return /<(?:rss|feed)(?:\s|>)/i.test(xml);
+}
+
+export function parseRssXml(xml: string): ParsedRss {
   const items: RssItem[] = [];
 
-  const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+  const itemRegex = /<(item|entry)\b[^>]*>([\s\S]*?)<\/\1>/gi;
   let match;
 
   while ((match = itemRegex.exec(xml)) !== null) {
-    const itemXml = match[1];
+    const itemXml = match[2];
 
     const title = extractTag(itemXml, "title") ?? "";
-    const link = extractTag(itemXml, "link") ?? "";
-    const description = extractTag(itemXml, "description") ?? "";
-    const pubDate = extractTag(itemXml, "pubDate") ?? extractTag(itemXml, "dc:date") ?? "";
+    const link =
+      extractTag(itemXml, "link") ??
+      extractAttribute(itemXml, "link", "href") ??
+      "";
+    const description =
+      extractTag(itemXml, "description") ??
+      extractTag(itemXml, "summary") ??
+      extractTag(itemXml, "media:description") ??
+      "";
+    const pubDate =
+      extractTag(itemXml, "pubDate") ??
+      extractTag(itemXml, "published") ??
+      extractTag(itemXml, "updated") ??
+      extractTag(itemXml, "dc:date") ??
+      "";
     const creator = extractTag(itemXml, "dc:creator") ?? undefined;
-    const content = extractTag(itemXml, "content:encoded") ?? extractTag(itemXml, "content") ?? undefined;
+    const content =
+      extractTag(itemXml, "content:encoded") ??
+      extractTag(itemXml, "content") ??
+      undefined;
 
     const thumbnail =
+      extractAttribute(itemXml, "media:thumbnail", "url") ??
       extractAttribute(itemXml, "media:content", "url") ??
       extractAttribute(itemXml, "enclosure", "url") ??
       undefined;
@@ -80,17 +172,20 @@ function parseRssXml(xml: string): ParsedRss {
 }
 
 function extractTag(xml: string, tag: string): string | null {
-  const cdataRegex = new RegExp(`<${tag}[^>]*>\\s*<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>\\s*</${tag}>`, "i");
-  const cdataMatch = xml.match(cdataRegex);
-  if (cdataMatch) return cdataMatch[1].trim();
-
   const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i");
   const match = xml.match(regex);
-  return match ? match[1].trim() : null;
+  if (!match) return null;
+
+  const value = match[1].trim();
+  const cdataMatch = value.match(/^<!\[CDATA\[([\s\S]*?)\]\]>$/);
+  return cdataMatch ? cdataMatch[1].trim() : value;
 }
 
 function extractAttribute(xml: string, tag: string, attr: string): string | null {
-  const regex = new RegExp(`<${tag}[^>]*${attr}=["']([^"']*)["'][^>]*>`, "i");
+  const regex = new RegExp(
+    `<${tag}[^>]*${attr}=["']([^"']*)["'][^>]*>`,
+    "i"
+  );
   const match = xml.match(regex);
   return match ? match[1] : null;
 }
@@ -101,105 +196,166 @@ function stripHtml(html: string): string {
 
 function decodeHtmlEntities(text: string): string {
   return text
-    .replace(/&/g, "&")
-    .replace(/</g, "<")
-    .replace(/>/g, ">")
-    .replace(/"/g, '"')
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
     .replace(/&#039;/g, "'")
     .replace(/&#x27;/g, "'")
     .replace(/&#x2F;/g, "/");
 }
 
-async function fetchRss(url: string): Promise<ParsedRss | null> {
-  try {
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": "filmtechxai-bot/1.0",
-        Accept: "application/rss+xml, application/xml, text/xml",
-      },
-    });
+export async function fetchRss(url: string): Promise<ParsedRss | null> {
+  for (let attempt = 1; attempt <= FEED_FETCH_ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "User-Agent": "filmtechxai-bot/1.0",
+          Accept:
+            "application/rss+xml, application/atom+xml, application/xml, text/xml",
+        },
+        signal: AbortSignal.timeout(15_000),
+      });
 
-    if (!response.ok) {
-      console.error(`Failed to fetch ${url}: ${response.status}`);
-      return null;
+      if (!response.ok) {
+        if (response.status < 500 && response.status !== 408 && response.status !== 429) {
+          logger.error(`Failed to fetch ${url}: ${response.status}`);
+          return null;
+        }
+
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const xml = await response.text();
+      if (!isFeedDocument(xml)) {
+        logger.error(`Response from ${url} is not an RSS or Atom feed.`);
+        return null;
+      }
+
+      const feed = parseRssXml(xml);
+      if (feed.items.length === 0) {
+        logger.error(`No feed items found in ${url}.`);
+        return null;
+      }
+
+      return feed;
+    } catch (error) {
+      if (attempt === FEED_FETCH_ATTEMPTS) {
+        logger.error(`Error fetching ${url}:`, error);
+        return null;
+      }
+
+      logger.info(
+        `  Retry ${attempt}/${FEED_FETCH_ATTEMPTS - 1} after a temporary fetch error.`
+      );
     }
-
-    const xml = await response.text();
-    return parseRssXml(xml);
-  } catch (error) {
-    console.error(`Error fetching ${url}:`, error);
-    return null;
   }
+
+  return null;
 }
 
-/**
- * Fetch YouTube videos using YouTube Data API v3
- */
-async function fetchYoutubeVideos(channelId: string, channelName: string): Promise<YoutubeVideo[]> {
+export async function fetchYoutubeVideos(
+  channelId: string,
+  channelName: string,
+  youtubeApiKey: string
+): Promise<YoutubeVideo[]> {
   try {
-    // Get uploads playlist ID
-    const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${YOUTUBE_API_KEY}`;
-    const channelRes = await fetch(channelUrl);
-    const channelData = await channelRes.json();
-
-    if (!channelData.items || channelData.items.length === 0) {
-      console.error(`  No channel found for ID: ${channelId}`);
+    const channelData = await fetchYoutubeJson(
+      `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${encodeURIComponent(channelId)}&key=${encodeURIComponent(youtubeApiKey)}`,
+      "channel"
+    );
+    const uploadsPlaylistId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+    if (typeof uploadsPlaylistId !== "string") {
+      logger.error(`  No upload playlist found for YouTube channel ${channelName}.`);
       return [];
     }
 
-    const uploadsPlaylistId = channelData.items[0].contentDetails.relatedPlaylists.uploads;
+    const playlistData = await fetchYoutubeJson(
+      `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${encodeURIComponent(uploadsPlaylistId)}&maxResults=3&key=${encodeURIComponent(youtubeApiKey)}`,
+      "playlist"
+    );
+    const playlistItems = Array.isArray(playlistData.items) ? playlistData.items : [];
+    const videoIds = playlistItems
+      .map(item => item?.snippet?.resourceId?.videoId)
+      .filter((id): id is string => typeof id === "string")
+      .join(",");
+    if (!videoIds) return [];
 
-    // Get videos from uploads playlist
-    const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=3&key=${YOUTUBE_API_KEY}`;
-    const playlistRes = await fetch(playlistUrl);
-    const playlistData = await playlistRes.json();
-
-    if (!playlistData.items) return [];
-
-    // Get video details (view count)
-    const videoIds = playlistData.items.map((item: any) => item.snippet.resourceId.videoId).join(",");
-    const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${YOUTUBE_API_KEY}`;
-    const videoRes = await fetch(videoUrl);
-    const videoData = await videoRes.json();
-
-    const viewCounts: Record<string, string> = {};
-    if (videoData.items) {
-      for (const video of videoData.items) {
-        viewCounts[video.id] = video.statistics.viewCount || "0";
+    const videoData = await fetchYoutubeJson(
+      `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${encodeURIComponent(videoIds)}&key=${encodeURIComponent(youtubeApiKey)}`,
+      "video statistics"
+    );
+    const viewCounts = new Map<string, string>();
+    for (const video of Array.isArray(videoData.items) ? videoData.items : []) {
+      const id = video?.id;
+      if (typeof id === "string") {
+        viewCounts.set(id, String(video?.statistics?.viewCount ?? "0"));
       }
     }
 
-    return playlistData.items.map((item: any) => ({
-      title: item.snippet.title,
-      link: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
-      description: item.snippet.description || "",
-      pubDate: item.snippet.publishedAt,
-      thumbnail: item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.high?.url || "",
-      channelName,
-      viewCount: viewCounts[item.snippet.resourceId.videoId] || "0",
-    }));
+    return playlistItems.flatMap(item => {
+      const snippet = item?.snippet;
+      const videoId = snippet?.resourceId?.videoId;
+      if (typeof videoId !== "string" || typeof snippet?.title !== "string") {
+        return [];
+      }
+
+      return [
+        {
+          title: snippet.title,
+          link: `https://www.youtube.com/watch?v=${videoId}`,
+          description: typeof snippet.description === "string" ? snippet.description : "",
+          pubDate:
+            typeof snippet.publishedAt === "string"
+              ? snippet.publishedAt
+              : new Date().toISOString(),
+          thumbnail:
+            snippet.thumbnails?.maxres?.url ??
+            snippet.thumbnails?.high?.url ??
+            snippet.thumbnails?.medium?.url ??
+            "",
+          channelName,
+          viewCount: viewCounts.get(videoId) ?? "0",
+        },
+      ];
+    });
   } catch (error) {
-    console.error(`  Error fetching YouTube channel ${channelName}:`, error);
+    logger.error(`  Error fetching YouTube channel ${channelName}:`, error);
     return [];
   }
 }
 
-function createSlug(title: string): string {
-  return title
+async function fetchYoutubeJson(
+  url: string,
+  label: string
+): Promise<YouTubeApiResponse> {
+  const response = await fetch(url, { signal: AbortSignal.timeout(15_000) });
+  if (!response.ok) {
+    throw new Error(`YouTube ${label} request returned HTTP ${response.status}.`);
+  }
+  return response.json();
+}
+
+export function createSlug(title: string): string {
+  const slug = title
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
     .substring(0, 60);
+
+  return slug || "untitled";
 }
 
-function formatDate(dateStr: string): string {
-  try {
-    const date = new Date(dateStr);
-    return date.toISOString();
-  } catch {
-    return new Date().toISOString();
-  }
+export function formatDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+}
+
+function escapeFrontmatterString(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\s+/g, " ");
 }
 
 function createFrontmatter(
@@ -211,48 +367,85 @@ function createFrontmatter(
   ogImage?: string
 ): string {
   return `---
-title: "${title.replace(/"/g, '\\"')}"
-description: "${description.substring(0, 160).replace(/"/g, '\\"')}"
+title: "${escapeFrontmatterString(title)}"
+description: "${escapeFrontmatterString(description.substring(0, 160))}"
 pubDatetime: ${formatDate(pubDate)}
-author: "${author.replace(/"/g, '\\"')}"
-tags: [${tags.map((t) => `"${t}"`).join(", ")}]
-ogImage: "${ogImage || ""}"
+author: "${escapeFrontmatterString(author)}"
+tags: [${tags.map((tag) => `"${escapeFrontmatterString(tag)}"`).join(", ")}]
+ogImage: "${escapeFrontmatterString(ogImage || "")}"
 featured: false
 draft: false
 ---
 `;
 }
 
-function createPostContent(item: RssItem | YoutubeVideo, source: RssSource | { name: string; category: string }): string {
+function createPostContent(
+  item: RssItem | YoutubeVideo,
+  source: RssSource | { name: string; category: string }
+): string {
   let content = "";
 
-  if ("viewCount" in item) {
-    // YouTube video
-    const views = parseInt(item.viewCount).toLocaleString();
-    content += `![${item.title}](${item.thumbnail})\n\n`;
-    content += `**Kênh:** ${item.channelName} | **Lượt xem:** ${views}\n\n`;
-    if (item.description) {
-      content += `${item.description.substring(0, 500)}...\n\n`;
-    }
-    content += `---\n\n*Xem video đầy đủ tại: [YouTube](${item.link})*\n`;
+  if ("channelName" in item) {
+    content += markdownImage(item.title, item.thumbnail);
+    content += `**Kênh:** ${toPlainText(item.channelName)} | **Lượt xem:** ${formatViewCount(item.viewCount)}\n\n`;
+    content += markdownExcerpt(item.description, 500);
+    content += `---\n\n*Xem video đầy đủ tại: ${markdownLink("YouTube", item.link)}*\n`;
   } else {
-    // RSS article
-    if (item.thumbnail) {
-      content += `![${item.title}](${item.thumbnail})\n\n`;
-    }
-    if (item.description) {
-      content += `${item.description}\n\n`;
-    }
-    if (item.content && item.content.length > item.description.length) {
-      content += `${item.content}\n\n`;
-    }
-    content += `---\n\n*Đọc đầy đủ tại: [${source.name}](${item.link})*\n`;
+    content += markdownImage(item.title, item.thumbnail);
+    content += markdownExcerpt(item.description || item.content || "");
+    content += `---\n\n*Đọc đầy đủ tại: ${markdownLink(source.name, item.link)}*\n`;
   }
 
   return content;
 }
 
-export async function fetchAllRss(): Promise<{ success: number; failed: number; total: number }> {
+function markdownImage(alt: string, url?: string): string {
+  const safeUrl = toSafeExternalUrl(url);
+  return safeUrl ? `![${toPlainText(alt)}](<${safeUrl}>)\n\n` : "";
+}
+
+function markdownLink(label: string, url: string): string {
+  const safeUrl = toSafeExternalUrl(url);
+  return safeUrl ? `[${toPlainText(label)}](<${safeUrl}>)` : toPlainText(label);
+}
+
+function markdownExcerpt(value: string, maxLength = MAX_SOURCE_EXCERPT_LENGTH): string {
+  const text = toPlainText(value);
+  if (!text) return "";
+
+  const suffix = text.length > maxLength ? "..." : "";
+  return `${text.slice(0, maxLength)}${suffix}\n\n`;
+}
+
+function toPlainText(value: string): string {
+  return value
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/([\\`*_[\]{}<>])/g, "\\$1");
+}
+
+function toSafeExternalUrl(value?: string): string | null {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+function formatViewCount(value: string): string {
+  const views = Number(value);
+  return Number.isSafeInteger(views) && views >= 0 ? views.toLocaleString() : "0";
+}
+
+export async function fetchAllRss(options: { dryRun?: boolean } = {}): Promise<{
+  success: number;
+  failed: number;
+  total: number;
+}> {
+  const { dryRun = false } = options;
   const postsDir = join(process.cwd(), "src/content/posts/_auto");
   const aiDir = join(postsDir, "ai");
   const filmDir = join(postsDir, "film");
@@ -268,16 +461,17 @@ export async function fetchAllRss(): Promise<{ success: number; failed: number; 
   let failed = 0;
   let total = 0;
 
-  console.log(" Starting RSS fetch for filmtechxai...\n");
+  logger.info("Starting RSS fetch for filmtechxai...");
+  logger.info();
 
-  // Fetch RSS sources
   for (const source of RSS_SOURCES) {
-    console.log(` Fetching: ${source.name} (${source.category})`);
+    logger.info(`Fetching: ${source.name} (${source.category})`);
 
     const rss = await fetchRss(source.url);
 
     if (!rss) {
-      console.log(`  ❌ Failed to fetch\n`);
+      logger.info("  Failed to fetch");
+      logger.info();
       failed++;
       continue;
     }
@@ -286,86 +480,125 @@ export async function fetchAllRss(): Promise<{ success: number; failed: number; 
 
     for (const item of recentItems) {
       const slug = createSlug(item.title);
-      const date = new Date(item.pubDate || Date.now());
-      const datePrefix = date.toISOString().split("T")[0];
+      const datePrefix = formatDate(item.pubDate).split("T")[0];
       const filename = `${datePrefix}-${slug}.md`;
 
       const targetDir = source.category === "ai" ? aiDir : filmDir;
       const filepath = join(targetDir, filename);
 
       if (existsSync(filepath)) {
-        console.log(`  ⏭️  Skipped (exists): ${filename}`);
+        logger.info(`  Skipped (exists): ${filename}`);
         continue;
       }
 
-      const tags = [source.category, source.name.toLowerCase().replace(/\s+/g, "-")];
-      const frontmatter = createFrontmatter(item.title, item.description || "", item.pubDate || new Date().toISOString(), source.name, tags, item.thumbnail);
+      const tags = [
+        source.category,
+        source.name.toLowerCase().replace(/\s+/g, "-"),
+      ];
+      const frontmatter = createFrontmatter(
+        item.title,
+        item.description || "",
+        item.pubDate || new Date().toISOString(),
+        source.name,
+        tags,
+        toSafeExternalUrl(item.thumbnail) ?? undefined
+      );
       const content = createPostContent(item, source);
 
-      writeFileSync(filepath, frontmatter + "\n" + content, "utf-8");
-      console.log(`  ✅ Created: ${filename}`);
+      if (dryRun) {
+        logger.info(`  Would create: ${filename}`);
+      } else {
+        writeFileSync(filepath, frontmatter + "\n" + content, "utf-8");
+        logger.info(`  Created: ${filename}`);
+      }
       total++;
     }
 
     success++;
-    console.log("");
+    logger.info();
   }
 
-  // Fetch YouTube channels
-  console.log("📺 Fetching YouTube channels...\n");
-  for (const channel of YOUTUBE_CHANNELS) {
-    console.log(`📺 Fetching: ${channel.name}`);
+  const youtubeApiKey = getYoutubeApiKey();
+  if (youtubeApiKey) {
+    logger.info("Fetching YouTube channels with the free quota API...");
+    logger.info();
 
-    const videos = await fetchYoutubeVideos(channel.channelId, channel.name);
+    for (const channel of YOUTUBE_CHANNELS) {
+      logger.info(`Fetching: ${channel.name}`);
+
+      const videos = await fetchYoutubeVideos(
+        channel.channelId,
+        channel.name,
+        youtubeApiKey
+      );
 
     if (videos.length === 0) {
-      console.log(`  ❌ No videos found\n`);
+      logger.info("  No videos found");
+      logger.info();
       failed++;
       continue;
     }
 
     for (const video of videos) {
-      const slug = createSlug(video.title);
-      const date = new Date(video.pubDate);
-      const datePrefix = date.toISOString().split("T")[0];
-      const filename = `${datePrefix}-${slug}.md`;
-      const filepath = join(youtubeDir, filename);
+        const slug = createSlug(video.title);
+        const datePrefix = formatDate(video.pubDate).split("T")[0];
+        const filename = `${datePrefix}-${slug}.md`;
+        const filepath = join(youtubeDir, filename);
 
-      if (existsSync(filepath)) {
-        console.log(`  ⏭️  Skipped (exists): ${filename}`);
-        continue;
-      }
+        if (existsSync(filepath)) {
+          logger.info(`  Skipped (exists): ${filename}`);
+          continue;
+        }
 
-      const tags = ["youtube", channel.name.toLowerCase().replace(/\s+/g, "-"), "video"];
-      const frontmatter = createFrontmatter(video.title, video.description, video.pubDate, channel.name, tags, video.thumbnail);
-      const content = createPostContent(video, { name: channel.name, category: "youtube" });
+        const tags = [
+          "youtube",
+          channel.name.toLowerCase().replace(/\s+/g, "-"),
+          "video",
+        ];
+        const frontmatter = createFrontmatter(
+          video.title,
+          video.description,
+          video.pubDate,
+          channel.name,
+          tags,
+          toSafeExternalUrl(video.thumbnail) ?? undefined
+        );
+        const content = createPostContent(video, {
+          name: channel.name,
+          category: "youtube",
+        });
 
-      writeFileSync(filepath, frontmatter + "\n" + content, "utf-8");
-      console.log(`  ✅ Created: ${filename} (${parseInt(video.viewCount).toLocaleString()} views)`);
-      total++;
+        if (!dryRun) {
+          writeFileSync(filepath, frontmatter + "\n" + content, "utf-8");
+        }
+        logger.info(`  ${dryRun ? "Would create" : "Created"}: ${filename}`);
+        total++;
     }
 
-    success++;
-    console.log("");
+      success++;
+      logger.info();
+    }
   }
 
-  console.log("\n========================================");
-  console.log(`✅ Success: ${success} sources`);
-  console.log(`❌ Failed: ${failed} sources`);
-  console.log(`📝 Total posts created: ${total}`);
-  console.log("========================================\n");
+  logger.info();
+  logger.info("========================================");
+  logger.info(`Success: ${success} sources`);
+  logger.info(`Failed: ${failed} sources`);
+  logger.info(`Total posts created: ${total}`);
+  logger.info("========================================");
+  logger.info();
 
   return { success, failed, total };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  fetchAllRss()
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  fetchAllRss({ dryRun: process.argv.includes("--dry-run") })
     .then((result) => {
-      console.log("Done!", result);
+      logger.info(`Done: ${JSON.stringify(result)}`);
       process.exit(0);
     })
     .catch((error) => {
-      console.error("Error:", error);
+      logger.error("Error:", error);
       process.exit(1);
     });
 }
