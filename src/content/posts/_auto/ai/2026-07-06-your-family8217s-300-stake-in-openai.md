@@ -1,6 +1,6 @@
 ---
-title: "Your family&#8217;s $300 stake in OpenAI"
-description: "This story originally appeared in The Algorithm, our weekly newsletter on AI. To get stories like this in your inbox first,&#160;sign up here. OpenAI CEO Sam Al"
+title: "Your family’s $300 stake in OpenAI"
+description: "This story originally appeared in The Algorithm, our weekly newsletter on AI. To get stories like this in your inbox first, sign up here. OpenAI CEO Sam Al"
 pubDatetime: 2026-07-06T18:00:00.000Z
 author: "MIT Technology Review AI"
 tags: ["ai", "mit-technology-review-ai"]
@@ -9,9 +9,9 @@ featured: false
 draft: false
 ---
 
-This story originally appeared in The Algorithm, our weekly newsletter on AI. To get stories like this in your inbox first,&#160;sign up here. OpenAI CEO Sam Altman’s oft-discussed promise that Americans will share in the wealth AI creates was in the news again last week. On Thursday, the Financial Times reported that Altman is in&#8230;
+This story originally appeared in The Algorithm, our weekly newsletter on AI. To get stories like this in your inbox first, sign up here. OpenAI CEO Sam Altman’s oft-discussed promise that Americans will share in the wealth AI creates was in the news again last week. On Thursday, the Financial Times reported that Altman is in…
 
-This story originally appeared in The Algorithm, our weekly newsletter on AI. To get stories like this in your inbox first,&nbsp;sign up here.
+This story originally appeared in The Algorithm, our weekly newsletter on AI. To get stories like this in your inbox first, sign up here.
 
 
 
@@ -23,11 +23,11 @@ In some ways, Altman’s plan is old news. He wrote about a more radical version
 
 
 
-What’s the logic here? For would-be recipients, it’s twofold. First, AI learns directly from human-generated work—books, movies, art—but AI companies generally never pay the authors of that work. A free equity stake could serve as a form of belated compensation. Second, the payout could mitigate the widespread anxiety that AI will cause a collapse of the labor market (even if economists disagree) by providing a safety net.&nbsp;
+What’s the logic here? For would-be recipients, it’s twofold. First, AI learns directly from human-generated work—books, movies, art—but AI companies generally never pay the authors of that work. A free equity stake could serve as a form of belated compensation. Second, the payout could mitigate the widespread anxiety that AI will cause a collapse of the labor market (even if economists disagree) by providing a safety net.
 
 
 
-How large a safety net is up for debate. Details of OpenAI’s latest proposal are sparse, but let’s say the government were to distribute this equity stake directly to Americans. After its funding round in March the company was valued at $852 billion, making a 5% stake in OpenAI worth about $42.6 billion today (the company is reportedly delaying its IPO until it can reach a $1 trillion evaluation, a tall order given that it’s spending heavily on data centers and still has not turned a profit). 
+How large a safety net is up for debate. Details of OpenAI’s latest proposal are sparse, but let’s say the government were to distribute this equity stake directly to Americans. After its funding round in March the company was valued at $852 billion, making a 5% stake in OpenAI worth about $42.6 billion today (the company is reportedly delaying its IPO until it can reach a $1 trillion evaluation, a tall order given that it’s spending heavily on data centers and still has not turned a profit).
 
 
 
@@ -39,7 +39,7 @@ If this dividend does materialize, what’s in it for tech companies? Altman mig
 
 
 
-But the bigger prize for OpenAI might be that the Trump administration loves making tech deals—like its equity stake in Intel and its share of Nvidia’s sales to China, among others.&nbsp; Staying on the administration’s good side is pretty essential for AI companies right now (just ask Anthropic). It could mean not having your models deemed a supply chain risk, or getting more help from the White House in stopping your rivals from China.&nbsp;
+But the bigger prize for OpenAI might be that the Trump administration loves making tech deals—like its equity stake in Intel and its share of Nvidia’s sales to China, among others.  Staying on the administration’s good side is pretty essential for AI companies right now (just ask Anthropic). It could mean not having your models deemed a supply chain risk, or getting more help from the White House in stopping your rivals from China.
 
 
 

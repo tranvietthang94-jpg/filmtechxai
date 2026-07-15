@@ -1,6 +1,6 @@
 ---
 title: "Released my 48 Hour AI Project, Talking about Story and Professionalism +AMA"
-description: "Let&#8217;s talk!"
+description: "Let’s talk!"
 pubDatetime: 2024-02-10T21:10:26.000Z
 author: "Filmmaker IQ"
 tags: ["film", "filmmaker-iq"]
@@ -9,7 +9,7 @@ featured: false
 draft: false
 ---
 
-Let&#8217;s talk!
+Let’s talk!
 
 ---
 

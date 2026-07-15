@@ -9,7 +9,7 @@ featured: false
 draft: false
 ---
 
-A group of 26 former Meta employees is suing the company over claims that it used AI tools to unfairly target workers on leave with layoffs, as reported earlier by Reuters. In the lawsuit, the employees allege Meta determined which workers to dismiss based on performance data collected by a "constellation" of internal AI tools, \[&#8230;\]
+A group of 26 former Meta employees is suing the company over claims that it used AI tools to unfairly target workers on leave with layoffs, as reported earlier by Reuters. In the lawsuit, the employees allege Meta determined which workers to dismiss based on performance data collected by a "constellation" of internal AI tools, \[…\]
 
 ---
 

@@ -9,7 +9,7 @@ featured: false
 draft: false
 ---
 
-Lana Daher’s debut feature, Do You Love Me (2026), is a kaleidoscopic exploration of Lebanon’s cultural memory. The Beirut-based multidisciplinary artist drew from 70 years of found footage and archival material to assemble this visceral 76-minute portrait of Lebanese history, which premiered at Venice Days and is now playing at Metrograph in New York. Daher stitches together clips from her country’s independent cinema, newsreels, and home movies, causing the past and the present to collide and recontextualize each other anew. As Daher cuts between time periods, she toggles between scenes from action movies and newsreel footage of violence on the streets of Beirut, \[&#8230;\] Source
+Lana Daher’s debut feature, Do You Love Me (2026), is a kaleidoscopic exploration of Lebanon’s cultural memory. The Beirut-based multidisciplinary artist drew from 70 years of found footage and archival material to assemble this visceral 76-minute portrait of Lebanese history, which premiered at Venice Days and is now playing at Metrograph in New York. Daher stitches together clips from her country’s independent cinema, newsreels, and home movies, causing the past and the present to collide and recontextualize each other anew. As Daher cuts between time periods, she toggles between scenes from action movies and newsreel footage of violence on the streets of Beirut, \[…\] Source
 
 ---
 

@@ -2,6 +2,7 @@
 import type { HTMLAttributes } from "astro/types";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import config from "@/config";
+import { getAssetPath } from "@/utils/withBase";
 
 type Props = {
   noMarginTop?: boolean;
@@ -18,15 +19,12 @@ const currentYear = new Date().getFullYear();
   {...attrs}
 >
   <div class="peek-site-footer-inner">
-    <span class="peek-site-footer-brand">
-      © {currentYear}
-      {config.site.title}
-    </span>
+    <span class="peek-site-footer-brand">© {currentYear} {config.site.title}</span>
     <nav class="peek-site-footer-nav">
       <a href={getRelativeLocaleUrl(locale, "about")}>Giới thiệu</a>
       <a href={getRelativeLocaleUrl(locale, "posts")}>Bài viết</a>
       <a href={getRelativeLocaleUrl(locale, "tags")}>Tags</a>
-      <a href={getRelativeLocaleUrl(locale, "rss.xml")}>RSS</a>
+      <a href={getAssetPath("rss.xml")}>RSS</a>
     </nav>
     <span class="peek-site-footer-note">
       Bản tin tổng hợp có ghi nguồn. Bản quyền nội dung gốc thuộc về đơn vị phát

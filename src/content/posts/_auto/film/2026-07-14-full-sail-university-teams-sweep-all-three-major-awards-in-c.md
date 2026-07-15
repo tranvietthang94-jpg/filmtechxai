@@ -9,7 +9,7 @@ featured: false
 draft: false
 ---
 
-Full Sail University teams swept the competition in the 2026 Coca-Cola Refreshing Films program, earning top honors across the nationwide filmmaking contest. Alongside a Red Ribbon Panel Grand Prize Award win for the graduate team’s Behind the Screens and Best Music Composition honors for Full Sail Lab instructor Kevin Kraus, the student team’s What Makes Them Magic was voted this year’s Cinemark Fan Favorite by the nationwide audience. What Is Coca-Cola Refreshing Films? Since 1998, Coca-Cola has celebrated student filmmakers with the nationwide Coca-Cola Refreshing Films Program, a film competition in which current students or recent graduates from participating film \[&#8230;\] Source
+Full Sail University teams swept the competition in the 2026 Coca-Cola Refreshing Films program, earning top honors across the nationwide filmmaking contest. Alongside a Red Ribbon Panel Grand Prize Award win for the graduate team’s Behind the Screens and Best Music Composition honors for Full Sail Lab instructor Kevin Kraus, the student team’s What Makes Them Magic was voted this year’s Cinemark Fan Favorite by the nationwide audience. What Is Coca-Cola Refreshing Films? Since 1998, Coca-Cola has celebrated student filmmakers with the nationwide Coca-Cola Refreshing Films Program, a film competition in which current students or recent graduates from participating film \[…\] Source
 
 ---
 

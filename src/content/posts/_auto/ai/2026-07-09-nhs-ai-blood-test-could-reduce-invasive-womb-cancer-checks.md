@@ -9,7 +9,7 @@ featured: false
 draft: false
 ---
 
-Several NHS hospitals are preparing to use an AI-powered blood test to help assess women referred for possible womb cancer before invasive checks are carried out. According to The Guardian, around 90,000 postmenopausal women in England are referred by GPs each year for checks after experiencing heavy bleeding. About 10,000 women are diagnosed with womb [&#8230;]
+Several NHS hospitals are preparing to use an AI-powered blood test to help assess women referred for possible womb cancer before invasive checks are carried out. According to The Guardian, around 90,000 postmenopausal women in England are referred by GPs each year for checks after experiencing heavy bleeding. About 10,000 women are diagnosed with womb […]
 The post NHS AI blood test could reduce invasive womb cancer checks appeared first on AI News.
 
 Several NHS hospitals are preparing to use an AI-powered blood test to help assess women referred for possible womb cancer before invasive checks are carried out.
@@ -128,7 +128,7 @@ See also: Takeda signs $600M AI drug discovery deal with Insilico
 
 
 
-Want to learn more about AI and big data from industry leaders? Check out AI &amp; Big Data Expo taking place in Amsterdam, California, and London. The comprehensive event is part of TechEx and is co-located with other leading technology events, click here for more information.
+Want to learn more about AI and big data from industry leaders? Check out AI & Big Data Expo taking place in Amsterdam, California, and London. The comprehensive event is part of TechEx and is co-located with other leading technology events, click here for more information.
 
 
 

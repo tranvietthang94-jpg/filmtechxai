@@ -1,5 +1,5 @@
 ---
-title: "Lorde says AI glasses are &#8216;not sexy&#8217;"
+title: "Lorde says AI glasses are ‘not sexy’"
 description: "\"Increasingly in our world, it gets harder and harder to know what is real,\" Lorde said onstage."
 pubDatetime: 2026-07-14T23:10:02.000Z
 author: "TechCrunch AI"

@@ -9,7 +9,7 @@ featured: false
 draft: false
 ---
 
-A recent AWS GraphRAG deployment reduced drug research and development cycles in pharmaceutical environments by 87 percent. This acceleration is achieved by integrating previously separated proprietary databases into a unified and queryable knowledge graph. Historically, initial data gathering and screening phases took over six months per iteration, yielding a low five percent success rate. Crucial [&#8230;]
+A recent AWS GraphRAG deployment reduced drug research and development cycles in pharmaceutical environments by 87 percent. This acceleration is achieved by integrating previously separated proprietary databases into a unified and queryable knowledge graph. Historically, initial data gathering and screening phases took over six months per iteration, yielding a low five percent success rate. Crucial […]
 The post AWS GraphRAG deployment cuts drug research cycles by 87% appeared first on AI News.
 
 A recent AWS GraphRAG deployment reduced drug research and development cycles in pharmaceutical environments by 87 percent. This acceleration is achieved by integrating previously separated proprietary databases into a unified and queryable knowledge graph.
@@ -104,7 +104,7 @@ See also: Insilico Medicine advances AI drug for IPF to Phase III trials
 
 
 
-Want to learn more about AI and big data from industry leaders? Check out AI &amp; Big Data Expo taking place in Amsterdam, California, and London. The comprehensive event is part of TechEx and is co-located with other leading technology events including the Cyber Security &amp; Cloud Expo. Click here for more information.
+Want to learn more about AI and big data from industry leaders? Check out AI & Big Data Expo taking place in Amsterdam, California, and London. The comprehensive event is part of TechEx and is co-located with other leading technology events including the Cyber Security & Cloud Expo. Click here for more information.
 
 
 

@@ -11,7 +11,13 @@ import {
   YOUTUBE_CHANNELS,
   type RssSource,
 } from "../src/config/sources";
-import { existsSync, mkdirSync, writeFileSync } from "fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+} from "fs";
 import { join } from "path";
 import { pathToFileURL } from "url";
 
@@ -86,6 +92,21 @@ interface YouTubeApiResponse {
 
 const FEED_FETCH_ATTEMPTS = 3;
 const MAX_SOURCE_EXCERPT_LENGTH = 900;
+const NAMED_HTML_ENTITIES: Record<string, string> = {
+  amp: "&",
+  apos: "'",
+  gt: ">",
+  hellip: "…",
+  ldquo: "“",
+  lsquo: "‘",
+  lt: "<",
+  mdash: "—",
+  nbsp: " ",
+  ndash: "–",
+  quot: '"',
+  rdquo: "”",
+  rsquo: "’",
+};
 
 function formatLogDetail(detail: unknown): string {
   if (detail instanceof Error) {
@@ -158,7 +179,7 @@ export function parseRssXml(xml: string): ParsedRss {
         description: decodeHtmlEntities(stripHtml(description || "")),
         pubDate,
         creator: creator ? decodeHtmlEntities(creator) : undefined,
-        content: content ? stripHtml(content) : undefined,
+        content: content ? decodeHtmlEntities(stripHtml(content)) : undefined,
         thumbnail,
       });
     }
@@ -194,16 +215,91 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "").trim();
 }
 
-function decodeHtmlEntities(text: string): string {
-  return text
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&#039;/g, "'")
-    .replace(/&#x27;/g, "'")
-    .replace(/&#x2F;/g, "/");
+export function decodeHtmlEntities(text: string): string {
+  let decoded = text;
+
+  // Feeds sometimes encode entities twice, for example &amp;#8217;. Two passes
+  // handle that common case while avoiding unbounded decoding of source text.
+  for (let pass = 0; pass < 2; pass++) {
+    const next = decoded.replace(
+      /&(?:#(\d+)|#x([\da-f]+)|([a-z]+));/gi,
+      (entity, decimal?: string, hexadecimal?: string, named?: string) => {
+        const normalizedName = named?.toLowerCase();
+
+        if (normalizedName) {
+          return NAMED_HTML_ENTITIES[normalizedName] ?? entity;
+        }
+
+        const value = Number.parseInt(
+          hexadecimal ?? decimal ?? "",
+          hexadecimal ? 16 : 10
+        );
+
+        if (!Number.isSafeInteger(value) || value < 0 || value > 0x10ffff) {
+          return entity;
+        }
+
+        return String.fromCodePoint(value);
+      }
+    );
+
+    if (next === decoded) {
+      break;
+    }
+
+    decoded = next;
+  }
+
+  return decoded;
+}
+
+function getGeneratedPostFiles(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+    const filepath = join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      return getGeneratedPostFiles(filepath);
+    }
+
+    return entry.isFile() && entry.name.endsWith(".md") ? [filepath] : [];
+  });
+}
+
+function normalizeGeneratedPostEntities(postsDir: string): number {
+  if (!existsSync(postsDir)) {
+    return 0;
+  }
+
+  let normalized = 0;
+
+  for (const filepath of getGeneratedPostFiles(postsDir)) {
+    const content = readFileSync(filepath, "utf-8");
+    const decoded = decodeHtmlEntities(content).replace(/[ \t]+$/gm, "");
+
+    if (decoded !== content) {
+      writeFileSync(filepath, decoded, "utf-8");
+      normalized++;
+    }
+  }
+
+  return normalized;
+}
+
+function getExistingSourceUrls(postsDir: string): Set<string> {
+  if (!existsSync(postsDir)) {
+    return new Set();
+  }
+
+  const sourceUrls = new Set<string>();
+
+  for (const filepath of getGeneratedPostFiles(postsDir)) {
+    const content = readFileSync(filepath, "utf-8");
+    for (const match of content.matchAll(/\]\(<(https?:\/\/[^>\s]+)>\)/g)) {
+      sourceUrls.add(match[1]);
+    }
+  }
+
+  return sourceUrls;
 }
 
 export async function fetchRss(url: string): Promise<ParsedRss | null> {
@@ -457,6 +553,16 @@ export async function fetchAllRss(options: { dryRun?: boolean } = {}): Promise<{
     }
   });
 
+  if (!dryRun) {
+    const normalizedPostCount = normalizeGeneratedPostEntities(postsDir);
+    if (normalizedPostCount > 0) {
+      logger.info(`Normalized HTML entities in ${normalizedPostCount} generated posts.`);
+      logger.info();
+    }
+  }
+
+  const existingSourceUrls = getExistingSourceUrls(postsDir);
+
   let success = 0;
   let failed = 0;
   let total = 0;
@@ -486,7 +592,7 @@ export async function fetchAllRss(options: { dryRun?: boolean } = {}): Promise<{
       const targetDir = source.category === "ai" ? aiDir : filmDir;
       const filepath = join(targetDir, filename);
 
-      if (existsSync(filepath)) {
+      if (existsSync(filepath) || existingSourceUrls.has(item.link)) {
         logger.info(`  Skipped (exists): ${filename}`);
         continue;
       }
@@ -509,6 +615,7 @@ export async function fetchAllRss(options: { dryRun?: boolean } = {}): Promise<{
         logger.info(`  Would create: ${filename}`);
       } else {
         writeFileSync(filepath, frontmatter + "\n" + content, "utf-8");
+        existingSourceUrls.add(item.link);
         logger.info(`  Created: ${filename}`);
       }
       total++;
@@ -545,7 +652,7 @@ export async function fetchAllRss(options: { dryRun?: boolean } = {}): Promise<{
         const filename = `${datePrefix}-${slug}.md`;
         const filepath = join(youtubeDir, filename);
 
-        if (existsSync(filepath)) {
+        if (existsSync(filepath) || existingSourceUrls.has(video.link)) {
           logger.info(`  Skipped (exists): ${filename}`);
           continue;
         }
@@ -570,6 +677,7 @@ export async function fetchAllRss(options: { dryRun?: boolean } = {}): Promise<{
 
         if (!dryRun) {
           writeFileSync(filepath, frontmatter + "\n" + content, "utf-8");
+          existingSourceUrls.add(video.link);
         }
         logger.info(`  ${dryRun ? "Would create" : "Created"}: ${filename}`);
         total++;

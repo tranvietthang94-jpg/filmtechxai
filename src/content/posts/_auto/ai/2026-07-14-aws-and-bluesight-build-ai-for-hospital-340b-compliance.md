@@ -9,7 +9,7 @@ featured: false
 draft: false
 ---
 
-AWS (Amazon Web Services) has explained how Bluesight developed Prism, an AI layer that connects hospital pharmacy and compliance data across its product suite. Prism Assistant for ControlCheck has reached general availability and operates across 20 health systems, according to AWS vendor statements. Meanwhile, a multi-product agent for 340B Group Purchasing Organisation (GPO) compliance remains \[&#8230;\] The post AWS and Bluesight build AI for hospital 340B compliance appeared first on AI News.
+AWS (Amazon Web Services) has explained how Bluesight developed Prism, an AI layer that connects hospital pharmacy and compliance data across its product suite. Prism Assistant for ControlCheck has reached general availability and operates across 20 health systems, according to AWS vendor statements. Meanwhile, a multi-product agent for 340B Group Purchasing Organisation (GPO) compliance remains \[…\] The post AWS and Bluesight build AI for hospital 340B compliance appeared first on AI News.
 
 ---
 

@@ -9,13 +9,13 @@ featured: false
 draft: false
 ---
 
-The AI firm Anthropic has developed a technique that has given it the clearest glimpse yet at what’s really going on inside large language models as they answer questions or carry out tasks. What they found ranges from the mundane to the unnerving. Researchers at the company built a tool called the Jacobian lens (or&#8230;
+The AI firm Anthropic has developed a technique that has given it the clearest glimpse yet at what’s really going on inside large language models as they answer questions or carry out tasks. What they found ranges from the mundane to the unnerving. Researchers at the company built a tool called the Jacobian lens (or…
 
-The AI firm Anthropic has developed a technique that has given it the clearest glimpse yet at what’s really going on inside large language models as they answer questions or carry out tasks. What they found ranges from the mundane to the unnerving. 
+The AI firm Anthropic has developed a technique that has given it the clearest glimpse yet at what’s really going on inside large language models as they answer questions or carry out tasks. What they found ranges from the mundane to the unnerving.
 
 
 
-Researchers at the company built a tool called the Jacobian lens (or J-lens) and used it to uncover a hidden area, which they named the J-space, inside Claude Opus 4.6, a version of Anthropic’s flagship LLM released in February. 
+Researchers at the company built a tool called the Jacobian lens (or J-lens) and used it to uncover a hidden area, which they named the J-space, inside Claude Opus 4.6, a version of Anthropic’s flagship LLM released in February.
 
 
 
@@ -63,7 +63,7 @@ Anthropic’s J-lens works in a similar way but picks out words that an LLM is l
 
 
 
-“When a model is operating, it’s not only trying to predict the next token,&#8221; says McGrath. &#8220;It’s also computing a lot of other things that might be useful for tokens that happen in the future.” 
+“When a model is operating, it’s not only trying to predict the next token,” says McGrath. “It’s also computing a lot of other things that might be useful for tokens that happen in the future.”
 
 
 
@@ -85,7 +85,7 @@ Anthropic gives a number of examples of what it found. Sometimes the J-lens expo
 
 
 
-In other cases, the J-lens revealed how Claude recognized different inputs. For example, the prompt “What is this? MSKGEELFTGVVPILVELDGDVNGHKFSVS” triggered the words “protein,” “fluor” (the first token in the word “fluorescent”), and “green.” (Which makes sense: the string of letters represents the first 30 amino acids in the green fluorescent protein found in a particular type of jellyfish.) 
+In other cases, the J-lens revealed how Claude recognized different inputs. For example, the prompt “What is this? MSKGEELFTGVVPILVELDGDVNGHKFSVS” triggered the words “protein,” “fluor” (the first token in the word “fluorescent”), and “green.” (Which makes sense: the string of letters represents the first 30 amino acids in the green fluorescent protein found in a particular type of jellyfish.)
 
 
 

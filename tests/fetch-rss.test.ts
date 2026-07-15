@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   createSlug,
+  decodeHtmlEntities,
   formatDate,
   isFeedDocument,
   parseRssXml,
@@ -36,6 +37,15 @@ test("parses RSS items and normalizes their HTML fields", () => {
       thumbnail: "https://example.com/cover.jpg",
     },
   ]);
+});
+
+test("decodes numeric and double-encoded HTML entities from feeds", () => {
+  assert.equal(
+    decodeHtmlEntities("Women&#8217;s &amp;#8216;film&#8217; &ndash; A&nbsp;B"),
+    "Women’s ‘film’ – A B"
+  );
+  assert.equal(decodeHtmlEntities("&#x1F3AC;"), "🎬");
+  assert.equal(decodeHtmlEntities("&#x110000;"), "&#x110000;");
 });
 
 test("parses Atom entries with link attributes and summary dates", () => {
