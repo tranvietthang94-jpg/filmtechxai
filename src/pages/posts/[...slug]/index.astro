@@ -11,10 +11,10 @@ import { slugifyStr } from "@/utils/slugify";
 import { toTransitionName } from "@/utils/toTransitionName";
 import EditPost from "./_components/EditPost.astro";
 import ShareLinks from "./_components/ShareLinks.astro";
-import BackButton from "./_components/BackButton.astro";
 import BackToTopButton from "./_components/BackToTopButton.astro";
 import AdjacentPostNav from "./_components/AdjacentPostNav.astro";
 import config from "@/config";
+import { getRelativeLocaleUrl } from "astro:i18n";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -104,22 +104,26 @@ const ogImage = ogImageUrl
 >
   <Header />
 
-  <BackButton />
-
-  <main
-    id="main-content"
-    class:list={["app-layout", { "mt-8": !config.features.showBackButton }]}
-    data-pagefind-body
-  >
+  <div class="peek-layout peek-detail-layout">
+    <main id="main-content" class="peek-detail" data-pagefind-body>
+    <div class="peek-detail-toolbar">
+      <a href={getRelativeLocaleUrl(locale, "")} class="peek-back-link">← Quay lại</a>
+      <div class="flex items-center gap-3">
+        <span class="peek-update"><i></i> CẬP NHẬT</span>
+        <button type="button" class="peek-share-action" data-share>↗ Chia sẻ</button>
+      </div>
+    </div>
     <h1
       style={{ viewTransitionName: toTransitionName(title) }}
-      class="text-accent inline-block text-2xl font-bold sm:text-3xl"
+      class="peek-detail-title"
     >
       {title}
     </h1>
 
-    <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+    <div class="peek-detail-meta">
+      <span class="peek-detail-author">{post.data.author}</span>
+      <span aria-hidden="true">·</span>
+      <Datetime {pubDatetime} {modDatetime} {timezone} />
       <span
         aria-hidden="true"
         class:list={[
@@ -135,8 +139,7 @@ const ogImage = ogImageUrl
     <article
       id="article"
       class:list={[
-        "mt-8 w-full",
-        "app-prose max-w-app",
+        "peek-detail-article app-prose",
         "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
       ]}
     >
@@ -159,6 +162,7 @@ const ogImage = ogImageUrl
 
     <AdjacentPostNav {prevPost} {nextPost} />
   </main>
+  </div>
   <Footer />
 </PostLayout>
 
@@ -529,4 +533,30 @@ const ogImage = ogImageUrl
   document.addEventListener("astro:after-swap", () =>
     window.scrollTo({ left: 0, top: 0, behavior: "instant" })
   );
+</script>
+
+<script>
+  function bindShareButton() {
+    const button = document.querySelector<HTMLButtonElement>("[data-share]");
+    if (!button || button.dataset.bound === "true") return;
+    button.dataset.bound = "true";
+
+    button.addEventListener("click", async () => {
+      const shareData = { title: document.title, url: window.location.href };
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      await navigator.clipboard?.writeText(window.location.href);
+      const label = button.textContent;
+      button.textContent = "✓ Đã sao chép";
+      window.setTimeout(() => {
+        button.textContent = label;
+      }, 1600);
+    });
+  }
+
+  bindShareButton();
+  document.addEventListener("astro:after-swap", bindShareButton);
 </script>

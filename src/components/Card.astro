@@ -2,35 +2,36 @@
 import type { CollectionEntry } from "astro:content";
 import { getPostUrl } from "@/utils/getPostPaths";
 import { toTransitionName } from "@/utils/toTransitionName";
-import Datetime from "./Datetime.astro";
+import config from "@/config";
 
 type Props = {
   variant?: "h2" | "h3";
 } & CollectionEntry<"posts">;
 
 const { variant: Heading = "h2", id, data, filePath } = Astro.props;
-
-const { title, description, ...props } = data;
+const { title, description, author, pubDatetime, tags } = data;
+const locale = Astro.currentLocale ?? config.site.lang;
+const published = new Intl.DateTimeFormat(locale, {
+  day: "numeric",
+  month: "short",
+  timeZone: config.site.timezone,
+}).format(pubDatetime);
+const isVideo = tags.some(tag => tag.toLowerCase() === "youtube");
 ---
 
 <li class="peek-card">
-  <a
-    href={getPostUrl(id, filePath, Astro.currentLocale)}
-    class="peek-title-link"
-  >
-    <Heading
-      transition:name={toTransitionName(title)}
-      class="peek-card-title"
-    >
-      {title}
-    </Heading>
-  </a>
   <div class="peek-card-meta">
-    <span class="peek-src-type">📝</span>
-    <Datetime {...props} />
+    <span class:list={["peek-content-kind", { video: isVideo }]} aria-hidden="true">{isVideo ? "▶" : "●"}</span>
+    <span class="peek-card-source">{author}</span>
+    <span aria-hidden="true">·</span>
+    <time datetime={pubDatetime.toISOString()}>{published}</time>
   </div>
+  <a href={getPostUrl(id, filePath, Astro.currentLocale)} class="peek-title-link">
+    <Heading transition:name={toTransitionName(title)} class="peek-card-title">{title}</Heading>
+  </a>
   {description && <p class="peek-card-summary">{description}</p>}
   <div class="peek-card-foot">
-    <span class="peek-see">Xem bài viết →</span>
+    <span>{isVideo ? "Xem video" : "Đọc tóm tắt"}</span>
+    <span class="peek-see">Mở bài viết →</span>
   </div>
 </li>

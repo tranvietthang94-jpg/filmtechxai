@@ -11,20 +11,16 @@ import { useTranslations } from "@/i18n";
 import config from "@/config";
 
 const { features } = config;
-
 const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
-
 const relativePath = stripBase(Astro.url.pathname);
 const pathWithoutTrailingSlash =
   relativePath.endsWith("/") && relativePath !== "/"
     ? relativePath.slice(0, -1)
     : relativePath;
-
 const currentPath = stripLocale(pathWithoutTrailingSlash, locale);
 const searchPath = getRelativeLocaleUrl(locale, "search");
 const currentSearchQuery = Astro.url.searchParams.get("q") ?? "";
-
 const isActive = (path: string) => {
   const currentPathArray = currentPath.split("/").filter(p => p.trim());
   const pathArray = path.split("/").filter(p => p.trim());
@@ -41,70 +37,31 @@ const isActive = (path: string) => {
 </a>
 
 <header class="peek-header">
-  <div class="peek-layout" style="padding-top: 0; padding-bottom: 0;">
-    <a
-      href={getRelativeLocaleUrl(locale, "")}
-      class="flex items-center gap-2 no-underline"
-      aria-label={`Về trang chủ ${config.site.title}`}
-    >
-      <span class="peek-logo-bubble" aria-hidden="true">
-        <span class="peek-logo-eye"></span>
-        <span class="peek-logo-eye"></span>
-      </span>
-      <span class="flex items-baseline gap-2">
-        <span class="peek-logo-word">{config.site.title}</span>
-        <span class="peek-logo-tag">AI x Film Tech</span>
-      </span>
+  <div class="peek-topbar">
+    <a href={getRelativeLocaleUrl(locale, "")} class="peek-mobile-brand lg:hidden" aria-label={`Trang chủ ${config.site.title}`}>
+      <span class="peek-logo-bubble" aria-hidden="true"><span class="peek-logo-eye"></span><span class="peek-logo-eye"></span></span>
+      <span class="peek-logo-word">{config.site.title}</span>
     </a>
 
     {
       features.search !== false && (
-        <form
-          action={searchPath}
-          method="get"
-          class="peek-search mx-4 hidden max-w-md flex-1 sm:flex"
-          role="search"
-          aria-label={t.nav.search}
-        >
+        <form class="peek-search flex-1" action={searchPath} method="get" role="search" aria-label={t.nav.search}>
           <IconSearch class="size-4 flex-none" aria-hidden="true" />
-          <input
-            name="q"
-            placeholder="Tìm tin AI, camera, thiết bị, nguồn..."
-            value={currentSearchQuery}
-          />
+          <input name="q" placeholder="Tìm tin AI, camera, thiết bị, nguồn..." value={currentSearchQuery} />
         </form>
       )
     }
 
     <div class="ml-auto flex items-center gap-2.5">
-      {
-        features.search !== false && (
-          <LinkButton
-            href={searchPath}
-            class="peek-icon-btn sm:hidden"
-            title={t.nav.search}
-            aria-label={t.nav.search}
-          >
-            <IconSearch class="size-5" />
-          </LinkButton>
-        )
-      }
-
+      <span class="peek-update hidden sm:inline-flex"><i></i> CẬP NHẬT</span>
       {
         features.lightAndDarkMode && (
-          <button
-            id="theme-btn"
-            class="peek-icon-btn"
-            title={t.a11y.toggleTheme}
-            aria-label="auto"
-            aria-live="polite"
-          >
+          <button id="theme-btn" class="peek-icon-btn" title={t.a11y.toggleTheme} aria-label="auto" aria-live="polite">
             <IconMoon class="size-4 dark:hidden" />
             <IconSunHigh class="hidden size-4 dark:block" />
           </button>
         )
       }
-
       <button
         id="menu-btn"
         class="peek-icon-btn lg:hidden"
@@ -120,60 +77,16 @@ const isActive = (path: string) => {
     </div>
   </div>
 
-  <nav
-    id="menu-items"
-    class="border-border hidden border-t px-4 py-3 lg:hidden"
-  >
-    <ul class="flex flex-col gap-1">
-      <li>
-        <a
-          href={getRelativeLocaleUrl(locale, "")}
-          class:list={["peek-nav-item", { active: currentPath === "/" }]}
-        >
-          <span>🏠</span>
-          {t.nav.home}
-        </a>
-      </li>
-      <li>
-        <a
-          href={getRelativeLocaleUrl(locale, "posts")}
-          class:list={["peek-nav-item", { active: isActive("/posts") }]}
-        >
-          <span>🕒</span>
-          {t.nav.posts}
-        </a>
-      </li>
-      <li>
-        <a
-          href={getRelativeLocaleUrl(locale, "tags")}
-          class:list={["peek-nav-item", { active: isActive("/tags") }]}
-        >
-          <span>🏷️</span>
-          {t.nav.tags}
-        </a>
-      </li>
-      <li>
-        <a
-          href={getRelativeLocaleUrl(locale, "about")}
-          class:list={["peek-nav-item", { active: isActive("/about") }]}
-        >
-          <span>ℹ️</span>
-          {t.nav.about}
-        </a>
-      </li>
-      {
-        features.showArchives && (
-          <li>
-            <a
-              href={getRelativeLocaleUrl(locale, "archives")}
-              class:list={["peek-nav-item", { active: isActive("/archives") }]}
-            >
-              <span>📦</span> {t.nav.archives}
-            </a>
-          </li>
-        )
-      }
-    </ul>
+  <nav id="menu-items" class="peek-mobile-menu hidden lg:hidden">
+    <a href={getRelativeLocaleUrl(locale, "")} class:list={["peek-nav-item", { active: currentPath === "/" }]}>🏠 {t.nav.home}</a>
+    <a href={getRelativeLocaleUrl(locale, "posts")} class:list={["peek-nav-item", { active: isActive("/posts") }]}>◷ {t.nav.posts}</a>
+    <a href={getRelativeLocaleUrl(locale, "tags")} class:list={["peek-nav-item", { active: isActive("/tags") }]}>🏷️ {t.nav.tags}</a>
+    <a href={getRelativeLocaleUrl(locale, "about")} class:list={["peek-nav-item", { active: isActive("/about") }]}>ⓘ {t.nav.about}</a>
+    {
+      features.search !== false && (
+        <LinkButton href={searchPath} class="peek-nav-item">{t.nav.search}</LinkButton>
+      )
+    }
   </nav>
 </header>
 
@@ -191,10 +104,8 @@ const isActive = (path: string) => {
 
     menuBtn.addEventListener("click", () => {
       const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
-
       menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
       menuBtn.setAttribute("aria-label", openMenu ? openLabel : closeLabel);
-
       menuItems.classList.toggle("hidden");
       menuIcon.classList.toggle("hidden");
       closeIcon.classList.toggle("hidden");
@@ -202,6 +113,5 @@ const isActive = (path: string) => {
   }
 
   toggleNav();
-
   document.addEventListener("astro:after-swap", toggleNav);
 </script>

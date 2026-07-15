@@ -3,6 +3,7 @@ import { ClientRouter } from "astro:transitions";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 import { getAssetPath } from "@/utils/withBase";
 import config from "@/config";
+import AppSidebar from "@/components/AppSidebar.astro";
 import "@/styles/global.css";
 
 type Props = {
@@ -96,10 +97,7 @@ const rssHref = getAssetPath("rss.xml");
     <script is:inline>
       (function () {
         const stored = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
-        ).matches;
-        const theme = stored ?? (prefersDark ? "dark" : "light");
+        const theme = stored ?? "dark";
         const root = document.firstElementChild;
         root?.setAttribute("data-theme", theme);
         root?.classList.toggle("dark", theme === "dark");
@@ -121,6 +119,7 @@ const rssHref = getAssetPath("rss.xml");
     class="bg-background text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
     style="font-family: var(--font-inter);"
   >
+    <AppSidebar />
     <slot />
     <script>
       import "@/scripts/theme";

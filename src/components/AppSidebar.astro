@@ -1,0 +1,139 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import config from "@/config";
+import { RSS_SOURCES, YOUTUBE_CHANNELS } from "@/config/sources";
+
+type SourceKind = "ai" | "film" | "youtube";
+
+type FeedSource = {
+  name: string;
+  domain: string;
+  href: string;
+  kind: SourceKind;
+};
+
+const locale = Astro.currentLocale ?? config.site.lang;
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const homePath = getRelativeLocaleUrl(locale, "");
+const postsPath = getRelativeLocaleUrl(locale, "posts");
+const tagsPath = getRelativeLocaleUrl(locale, "tags");
+const aboutPath = getRelativeLocaleUrl(locale, "about");
+const searchPath = getRelativeLocaleUrl(locale, "search");
+const tagAiPath = getRelativeLocaleUrl(locale, "tags/ai");
+const tagFilmPath = getRelativeLocaleUrl(locale, "tags/film");
+
+function getDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url.replace(/^https?:\/\//, "").split("/")[0];
+  }
+}
+
+function getOrigin(url: string): string {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return url;
+  }
+}
+
+const rssSources: FeedSource[] = RSS_SOURCES.map(source => ({
+  name: source.name,
+  domain: getDomain(source.url),
+  href: getOrigin(source.url),
+  kind: source.category,
+}));
+
+const youtubeSources: FeedSource[] = YOUTUBE_CHANNELS.map(channel => ({
+  name: channel.name,
+  domain: "youtube.com",
+  href: `https://www.youtube.com/channel/${channel.channelId}`,
+  kind: "youtube",
+}));
+
+const sources = [...rssSources, ...youtubeSources];
+const visibleSources = sources.slice(0, 14);
+const hiddenSourceCount = sources.length - visibleSources.length;
+const sourceLogoUrl = (source: FeedSource) =>
+  `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
+    source.domain
+  )}&sz=64`;
+
+const sourceCounts = {
+  ai: RSS_SOURCES.filter(source => source.category === "ai").length,
+  film: RSS_SOURCES.filter(source => source.category === "film").length,
+  youtube: YOUTUBE_CHANNELS.length,
+};
+
+const isActive = (path: string) => {
+  const target = path.replace(/\/+$/, "") || "/";
+  return currentPath === target || (target !== "/" && currentPath.startsWith(`${target}/`));
+};
+---
+
+<aside class="app-sidebar" aria-label="Điều hướng và nguồn tin">
+  <a href={homePath} class="app-sidebar-brand" aria-label={`Trang chủ ${config.site.title}`}>
+    <span class="peek-logo-bubble" aria-hidden="true">
+      <span class="peek-logo-eye"></span>
+      <span class="peek-logo-eye"></span>
+    </span>
+    <span>
+      <span class="peek-logo-word">{config.site.title}</span>
+      <span class="app-sidebar-tag">AI x Film Tech</span>
+    </span>
+  </a>
+
+  <nav class="app-sidebar-nav" aria-label="Điều hướng chính">
+    <a href={homePath} class:list={["peek-nav-item", { active: isActive(homePath) }]}>
+      <span aria-hidden="true">🏠</span> Trang chủ
+    </a>
+    <a href={postsPath} class:list={["peek-nav-item", { active: isActive(postsPath) }]}>
+      <span aria-hidden="true">◷</span> Mới nhất
+    </a>
+    <a href={tagsPath} class:list={["peek-nav-item", { active: isActive(tagsPath) }]}>
+      <span aria-hidden="true">🏷️</span> Chủ đề
+    </a>
+    <a href={aboutPath} class:list={["peek-nav-item", { active: isActive(aboutPath) }]}>
+      <span aria-hidden="true">ⓘ</span> Giới thiệu
+    </a>
+  </nav>
+
+  <div class="peek-side-title"><span>Lọc nguồn</span></div>
+  <nav aria-label="Lọc theo nguồn">
+    <a href={homePath} class:list={["peek-src-item", { active: isActive(homePath) }]}>
+      <span aria-hidden="true">●</span><span class="flex-1">Tất cả nguồn</span><span class="peek-src-badge">{sources.length}</span>
+    </a>
+    <a href={tagAiPath} class="peek-src-item">
+      <span aria-hidden="true">✦</span><span class="flex-1">AI</span><span class="peek-src-badge">{sourceCounts.ai}</span>
+    </a>
+    <a href={tagFilmPath} class="peek-src-item">
+      <span aria-hidden="true">🎬</span><span class="flex-1">Film tech</span><span class="peek-src-badge">{sourceCounts.film}</span>
+    </a>
+    <a href={`${searchPath}?q=youtube`} class="peek-src-item">
+      <span aria-hidden="true">▶</span><span class="flex-1">YouTube</span><span class="peek-src-badge">{sourceCounts.youtube}</span>
+    </a>
+  </nav>
+
+  <div class="peek-side-title"><span>Theo dõi</span><span>{sources.length}</span></div>
+  <nav aria-label="Nguồn đang theo dõi">
+    {
+      visibleSources.map(source => (
+        <a class="peek-follow-row" href={source.href} target="_blank" rel="noreferrer">
+          <img
+            class:list={[
+              "peek-follow-avatar",
+              source.kind === "youtube" ? "peek-follow-channel" : "peek-follow-logo",
+            ]}
+            src={sourceLogoUrl(source)}
+            alt=""
+            loading="lazy"
+          />
+          {source.kind === "youtube" && <span class="peek-follow-yt" aria-hidden="true">▶</span>}
+          <span>{source.name}</span>
+        </a>
+      ))
+    }
+    {hiddenSourceCount > 0 && <p class="peek-follow-etc">…và {hiddenSourceCount} nguồn khác</p>}
+  </nav>
+</aside>
