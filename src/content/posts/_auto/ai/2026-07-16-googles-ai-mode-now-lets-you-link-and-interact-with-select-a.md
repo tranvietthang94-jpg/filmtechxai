@@ -1,0 +1,16 @@
+---
+title: "Google’s AI Mode now lets you link and interact with select apps"
+description: "With this new update, Google is expanding AI Mode beyond answering questions and into completing tasks across the apps they use regularly."
+pubDatetime: 2026-07-16T16:00:00.000Z
+author: "TechCrunch AI"
+tags: ["ai", "techcrunch-ai"]
+ogImage: ""
+featured: false
+draft: false
+---
+
+With this new update, Google is expanding AI Mode beyond answering questions and into completing tasks across the apps they use regularly.
+
+---
+
+*Đọc đầy đủ tại: [TechCrunch AI](<https://techcrunch.com/2026/07/16/googles-ai-mode-now-lets-you-link-and-interact-with-select-apps/>)*

@@ -13,4 +13,4 @@ The new SmallRig Professional Outdoor Bag 25L was designed for solo operators. I
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/15/smallrig-professional-outdoor-backpack-25l/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=smallrig-professional-outdoor-backpack-25l>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/15/smallrig-professional-outdoor-backpack-25l/?utm_source=rss&utm_medium=rss&utm_campaign=smallrig-professional-outdoor-backpack-25l>)*

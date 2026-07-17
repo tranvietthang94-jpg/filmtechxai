@@ -13,4 +13,4 @@ Viltrox has announced its new AF 26mm F2.8 EVO, an ultra-compact full-frame auto
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/15/viltrox-af-26mm-f2-8-evo/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=viltrox-af-26mm-f2-8-evo>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/15/viltrox-af-26mm-f2-8-evo/?utm_source=rss&utm_medium=rss&utm_campaign=viltrox-af-26mm-f2-8-evo>)*
