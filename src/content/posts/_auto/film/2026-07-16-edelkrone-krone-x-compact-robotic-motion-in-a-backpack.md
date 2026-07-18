@@ -13,4 +13,4 @@ The new edelkrone Krone X Compact is a travel-ready robotic camera motion system
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/15/edelkrone-krone-x-compact-robotic-motion-in-a-backpack/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=edelkrone-krone-x-compact-robotic-motion-in-a-backpack>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/15/edelkrone-krone-x-compact-robotic-motion-in-a-backpack/?utm_source=rss&utm_medium=rss&utm_campaign=edelkrone-krone-x-compact-robotic-motion-in-a-backpack>)*

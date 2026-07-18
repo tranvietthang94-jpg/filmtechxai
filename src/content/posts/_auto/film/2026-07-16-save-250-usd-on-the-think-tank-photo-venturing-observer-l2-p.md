@@ -13,4 +13,4 @@ You can save $250 USD on the Think Tank Photo Venturing Observer L2 Photo Travel
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/15/save-250-usd-on-the-think-tank-photo-venturing-observer-l2-photo-traveler-48l/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=save-250-usd-on-the-think-tank-photo-venturing-observer-l2-photo-traveler-48l>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/15/save-250-usd-on-the-think-tank-photo-venturing-observer-l2-photo-traveler-48l/?utm_source=rss&utm_medium=rss&utm_campaign=save-250-usd-on-the-think-tank-photo-venturing-observer-l2-photo-traveler-48l>)*

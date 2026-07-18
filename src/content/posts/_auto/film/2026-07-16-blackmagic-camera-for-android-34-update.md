@@ -13,4 +13,4 @@ Blackmagic Design has released the Blackmagic Camera for Android 3.4 Update, whi
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/15/blackmagic-camera-for-android-3-4-update/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=blackmagic-camera-for-android-3-4-update>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/15/blackmagic-camera-for-android-3-4-update/?utm_source=rss&utm_medium=rss&utm_campaign=blackmagic-camera-for-android-3-4-update>)*
