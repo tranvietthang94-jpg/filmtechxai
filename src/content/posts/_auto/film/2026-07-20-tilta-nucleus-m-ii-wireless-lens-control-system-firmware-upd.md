@@ -13,4 +13,4 @@ Tilta has released a new firmware update for its Nucleus-M II Wireless Lens Cont
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/19/tilta-nucleus-m-ii-wireless-lens-control-system-firmware-update/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=tilta-nucleus-m-ii-wireless-lens-control-system-firmware-update>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/19/tilta-nucleus-m-ii-wireless-lens-control-system-firmware-update/?utm_source=rss&utm_medium=rss&utm_campaign=tilta-nucleus-m-ii-wireless-lens-control-system-firmware-update>)*

@@ -13,4 +13,4 @@ The Maxima Spectra is the latest fixture from the Italian lighting manufacturer.
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/19/maxima-spectra-review/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=maxima-spectra-review>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/19/maxima-spectra-review/?utm_source=rss&utm_medium=rss&utm_campaign=maxima-spectra-review>)*

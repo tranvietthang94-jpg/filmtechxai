@@ -13,4 +13,4 @@ Godox has officially announced its KNOWLED AM800R 4′ x 4′ light, which featu
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/19/godox-knowled-am800r/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=godox-knowled-am800r>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/19/godox-knowled-am800r/?utm_source=rss&utm_medium=rss&utm_campaign=godox-knowled-am800r>)*
