@@ -13,4 +13,4 @@ Mule Carts Falabella is a compact production cart that folds down and can be pla
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/20/mule-carts-falabella/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=mule-carts-falabella>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/20/mule-carts-falabella/?utm_source=rss&utm_medium=rss&utm_campaign=mule-carts-falabella>)*

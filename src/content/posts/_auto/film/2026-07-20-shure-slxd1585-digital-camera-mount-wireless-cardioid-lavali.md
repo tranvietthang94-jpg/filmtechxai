@@ -13,4 +13,4 @@ The Shure SLXD15/85 Digital Camera-Mount Wireless Cardioid Lavalier Mic System (
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/20/shure-slxd15-85-digital-camera-mount-wireless-cardioid-lavalier-mic-system-h55-514-to-558-mhz-on-sale-for-349-usd/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=shure-slxd15-85-digital-camera-mount-wireless-cardioid-lavalier-mic-system-h55-514-to-558-mhz-on-sale-for-349-usd>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/20/shure-slxd15-85-digital-camera-mount-wireless-cardioid-lavalier-mic-system-h55-514-to-558-mhz-on-sale-for-349-usd/?utm_source=rss&utm_medium=rss&utm_campaign=shure-slxd15-85-digital-camera-mount-wireless-cardioid-lavalier-mic-system-h55-514-to-558-mhz-on-sale-for-349-usd>)*
