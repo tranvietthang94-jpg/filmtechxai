@@ -13,4 +13,4 @@ The SmallHD ULTRA 10 Bolt 6 RX 1500 Monitor, in V-mount or Gold Mount, is on sal
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/21/save-2700-usd-on-the-smallhd-ultra-10-bolt-6-rx-1500-monitor/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=save-2700-usd-on-the-smallhd-ultra-10-bolt-6-rx-1500-monitor>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/21/save-2700-usd-on-the-smallhd-ultra-10-bolt-6-rx-1500-monitor/?utm_source=rss&utm_medium=rss&utm_campaign=save-2700-usd-on-the-smallhd-ultra-10-bolt-6-rx-1500-monitor>)*

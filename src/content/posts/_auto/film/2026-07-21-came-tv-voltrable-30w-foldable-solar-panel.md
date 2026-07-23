@@ -13,4 +13,4 @@ The CAME-TV VOLTRABLE 30W Foldable Solar Panel with USB-C PD, USB-A, and DC Outp
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/21/came-tv-voltrable-30w-foldable-solar-panel/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=came-tv-voltrable-30w-foldable-solar-panel>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/21/came-tv-voltrable-30w-foldable-solar-panel/?utm_source=rss&utm_medium=rss&utm_campaign=came-tv-voltrable-30w-foldable-solar-panel>)*
