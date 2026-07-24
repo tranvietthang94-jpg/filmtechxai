@@ -13,4 +13,4 @@ Tilta has new Camera Cages for the new Sony FX5. The modular camera cages featur
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/22/tilta-camera-cages-for-sony-fx5/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=tilta-camera-cages-for-sony-fx5>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/22/tilta-camera-cages-for-sony-fx5/?utm_source=rss&utm_medium=rss&utm_campaign=tilta-camera-cages-for-sony-fx5>)*

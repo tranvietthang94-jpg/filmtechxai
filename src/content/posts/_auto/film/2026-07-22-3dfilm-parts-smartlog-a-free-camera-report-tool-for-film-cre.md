@@ -13,4 +13,4 @@ draft: false
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/22/3dfilm-parts-smartlog-a-free-camera-report-tool-for-film-crews/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=3dfilm-parts-smartlog-a-free-camera-report-tool-for-film-crews>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/22/3dfilm-parts-smartlog-a-free-camera-report-tool-for-film-crews/?utm_source=rss&utm_medium=rss&utm_campaign=3dfilm-parts-smartlog-a-free-camera-report-tool-for-film-crews>)*

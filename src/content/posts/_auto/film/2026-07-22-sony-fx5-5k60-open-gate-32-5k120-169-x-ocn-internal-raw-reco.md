@@ -13,4 +13,4 @@ Sony has announced its new FX5. The FX5 is capable of recording 5K60 Open Gate (
 
 ---
 
-*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/22/sony-fx5-5k60-open-gate-32-5k120-169-x-ocn-internal-raw-recording/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=sony-fx5-5k60-open-gate-32-5k120-169-x-ocn-internal-raw-recording>)*
+*Đọc đầy đủ tại: [Newsshooter](<https://www.newsshooter.com/2026/07/22/sony-fx5-5k60-open-gate-32-5k120-169-x-ocn-internal-raw-recording/?utm_source=rss&utm_medium=rss&utm_campaign=sony-fx5-5k60-open-gate-32-5k120-169-x-ocn-internal-raw-recording>)*
